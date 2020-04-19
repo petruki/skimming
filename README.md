@@ -7,7 +7,7 @@ Skimming is a data fetcher for Deno. The idea is to provide a simple and efficie
 
  - Fetch documents online `skim()` or local `skimContent()`
  - Customizable cache
- - Customizable preview length
+ - Customizable preview
  - Ignore case option
  - Trim content option to display only complete information
 
@@ -17,24 +17,26 @@ Skimming is a data fetcher for Deno. The idea is to provide a simple and efficie
 ```js
 import Skimming from "../mod.ts";
 
-const files = ["installation.md", "skimming.md", "readme.md"];
-const input: Input = { url: "https://raw.githubusercontent.com/petruki/switcher-api/master/", files };
+const files = ["installation.md", "skimming.md", "README.md"];
+const context: Context = { url: "https://raw.githubusercontent.com/petruki/skimming/master/", files };
 
 const skimmer = new Skimming();
-const results = await skimmer.skim(input, query, { previewLength: 200 });
+skimmer.setContext(context);
+const results = await skimmer.skim(query, { previewLength: 200 });
 ```
-- Where `previewLength` is the number of characters after the found occurrence which will be displayed (defaul: 200)
+- Where `previewLength` is the number of characters after the found occurrence which will be displayed (default: 200)
 - Add `ignoreCase` option for whether ignore case or not (default: false)
 
 ### Using cache
 ```js
 import Skimming from "../mod.ts";
 
-const files = ["installation.md", "skimming.md", "readme.md"];
-const input: Input = { url: "https://raw.githubusercontent.com/petruki/switcher-api/master/", files };
+const files = ["installation.md", "skimming.md", "README.md"];
+const context: Context = { url: "https://raw.githubusercontent.com/petruki/skimming/master/", files };
 
 const skimmer = new Skimming({ expireDuration: 10, size: 10 });
-const results = await skimmer.skim(input, query, { previewLength: 200 });
+skimmer.setContext(context);
+const results = await skimmer.skim(query, { previewLength: 200 });
 ```
 - Where `expireDuration` the time in seconds that the cached value will expire (default: 1min)
 - Where `size` is the number of stored queries and its results in cache (default: 60)

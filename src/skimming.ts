@@ -1,17 +1,21 @@
 import {
-  Input,
+  Context,
   FetchOptions,
   Output,
   CacheOptions
 } from "./lib/types.ts";
 import CacheHandler from "./lib/cache.ts";
+import { validateQuery, validateContext } from "./lib/utils.ts";
+import { NotContentFound } from "./lib/exceptions.ts";
 
+const LINE_BREAK = "\n";
 const DEFAULT_PREVIEW_LENGTH = 200;
 const DEFAULT_TRIM = true;
 
 export default class Skimming {
   useCache: boolean = false;
   private cacheHandler!: CacheHandler;
+  private context!: Context;
 
   constructor(cacheOptions?: CacheOptions) {
     if (cacheOptions) {
@@ -20,24 +24,30 @@ export default class Skimming {
     }
   }
 
+  setContext(context: Context): void {
+    validateContext(context);
+    this.context = context;
+  }
+
   async skim(
-    input: Input,
     query: string,
     options: FetchOptions = {},
   ): Promise<Output[]> {
+    validateQuery(query);
+
     const { ignoreCase = false } = options;
     const results: Output[] = [];
 
     if (this.useCache) {
-      const result = this.cacheHandler.fetch(input, query, options);
+      const result = this.cacheHandler.fetch(this.context, query, options);
       if (result) {
         results.push(result);
       }
     }
 
-    for (let index = 0; index < input.files.length; index++) {
-      const element = input.files[index];
-      let content = await this.readDocument(input.url, element);
+    for (let i = 0; i < this.context.files.length; i++) {
+      const element = this.context.files[i];
+      let content = await this.readDocument(this.context.url, element);
 
       if (ignoreCase) {
         content = content.toLowerCase();
@@ -67,8 +77,13 @@ export default class Skimming {
     query: string,
     options: FetchOptions = {},
   ): string[] {
-    const { ignoreCase = false, previewLength = DEFAULT_PREVIEW_LENGTH, trimContent = DEFAULT_TRIM } =
-      options;
+    validateQuery(query);
+    
+    const { 
+      ignoreCase = false, 
+      previewLength = DEFAULT_PREVIEW_LENGTH, 
+      trimContent = DEFAULT_TRIM 
+    } = options;
     const segments = [];
 
     if (ignoreCase) {
@@ -79,8 +94,19 @@ export default class Skimming {
     let foundIndex = content.search(query);
     while (foundIndex != -1) {
       const from = content.substring(foundIndex);
-      const offset = from.substring(0, previewLength);
-      const lastLine = offset.lastIndexOf("\n");
+
+      let offset;
+      if (previewLength === -1) {
+        offset = from.substring(0, from.indexOf(LINE_BREAK));
+      } else {
+        offset = from.substring(0, previewLength === 0 ? query.length : previewLength);
+      }
+
+      const lastLine = offset.lastIndexOf(LINE_BREAK);
+
+      /* Extract content segment from the found query to the last complete line,
+       * However, if the previewLenght is shorter than the size of this line, it will display the established range.
+       */
       const segment = trimContent ? offset.substring(0, lastLine > 0 ? lastLine : offset.length) : offset;
       segments.push(segment);
       content = content.replace(segment, "");
@@ -93,10 +119,12 @@ export default class Skimming {
   private async readDocument(url: string, doc: string): Promise<string> {
     const result = await fetch(`${url}${doc}`);
     if (result != null && result.body != null) {
-      return await result.body.text().then((data: string) => {
-        return data;
-      });
+      if (result.status === 200) {
+        return await result.body.text().then((data: string) => {
+          return data;
+        });
+      }
     }
-    return '';
+    throw new NotContentFound(url, doc);
   }
 }

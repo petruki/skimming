@@ -1,6 +1,6 @@
 import { assertEquals } from "https://deno.land/std/testing/asserts.ts";
 import CacheHandle from "../src/lib/cache.ts";
-import { Input } from "../src/lib/types.ts";
+import { Context } from "../src/lib/types.ts";
 
 const { test } = Deno;
 
@@ -66,11 +66,11 @@ test({
 
     assertEquals(cacheHandle.cache[0].exp < cacheHandle.cache[1].exp, true);
 
-    const input: Input = {
+    const context: Context = {
       url: "https://www.skimming.com/docs/",
       files: ["filename2.md"],
     };
-    cacheHandle.fetch(input, "my search");
+    cacheHandle.fetch(context, "my search");
     assertEquals(cacheHandle.cache[0].exp < cacheHandle.cache[1].exp, false);
   },
 });
@@ -95,11 +95,11 @@ test({
 
     assertEquals(cacheHandle.cache[0].query, "my search");
     assertEquals(cacheHandle.cache[1].query, "another search");
-    const input: Input = {
+    const context: Context = {
       url: "https://www.skimming.com/docs/",
       files: ["filename2.md"],
     };
-    cacheHandle.fetch(input, "my search");
+    cacheHandle.fetch(context, "my search");
 
     // It remains the same order because fetch does not reorder
     assertEquals(cacheHandle.cache[0].query, "my search");

@@ -1,6 +1,7 @@
-import { assertEquals, assertNotEquals } from "https://deno.land/std/testing/asserts.ts";
-import { Input } from "../src/lib/types.ts";
+import { assertEquals, assertNotEquals, assertThrows, assertThrowsAsync } from "https://deno.land/std/testing/asserts.ts";
+import { Context } from "../src/lib/types.ts";
 import Skimming from "../mod.ts";
+import { InvalidQuery, InvalidContext } from "../src/lib/exceptions.ts";
 
 const { test } = Deno;
 
@@ -17,16 +18,34 @@ const content = `
 test({
   name: "MOD - Should return one valid entry",
   async fn(): Promise<void> {
-    const query = "Using cache";
+    const query = "Skimming";
     const files = ["README.md"];
-    const input: Input = {
+    const context: Context = {
       url: "https://raw.githubusercontent.com/petruki/skimming/master/",
       files,
     };
 
     const skimmer = new Skimming();
-    const entries = await skimmer.skim(input, query, { previewLength: 200 });
+    skimmer.setContext(context);
+    const entries = await skimmer.skim(query, { previewLength: 200 });
     assertEquals(entries.length, 1);
+  },
+});
+
+test({
+  name: "MOD - Should NOT return - Exception: empty query",
+  async fn(): Promise<void> {
+    const query = '';
+    const files = ["README.md"];
+    const context: Context = {
+      url: "https://raw.githubusercontent.com/petruki/skimming/master/",
+      files,
+    };
+
+    const skimmer = new Skimming();
+    skimmer.setContext(context);
+    assertThrowsAsync(async () => { await skimmer.skim(query); }, 
+      InvalidQuery, `Invalid query input. Cause: ${"it is empty"}.`);
   },
 });
 
@@ -67,5 +86,50 @@ test({
     const skimmer = new Skimming();
     const results = skimmer.skimContent(content, query, { previewLength: 20, ignoreCase: true });
     assertEquals(results.length, 3);
+  },
+});
+
+test({
+  name: "MOD - Should NOT return - Exception: url is empty",
+  async fn(): Promise<void> {
+    const files = ["README.md"];
+    const context: Context = {
+      url: "",
+      files,
+    };
+
+    const skimmer = new Skimming();
+    assertThrows(() => {  skimmer.setContext(context); }, 
+      InvalidContext, `Invalid context. Cause: ${"url is empty"}.`);
+  },
+});
+
+test({
+  name: "MOD - Should NOT return - Exception: file name is empty",
+  async fn(): Promise<void> {
+    const files = [""];
+    const context: Context = {
+      url: "https://raw.githubusercontent.com/petruki/skimming/master/",
+      files,
+    };
+
+    const skimmer = new Skimming();
+    assertThrows(() => {  skimmer.setContext(context); }, 
+      InvalidContext, `Invalid context. Cause: ${"file name is empty"}.`);
+  },
+});
+
+test({
+  name: "MOD - Should NOT return - Exception: endpoint might not work",
+  async fn(): Promise<void> {
+    const files = ["README.md"];
+    const context: Context = {
+      url: "https://raw.githubusercontent.com/petruki/skimming/master", // Here, it is missing a slash in the end
+      files,
+    };
+
+    const skimmer = new Skimming();
+    assertThrows(() => {  skimmer.setContext(context); }, 
+      InvalidContext, `Invalid context. Cause: this enpoint might not work: ${context.url}${"README.md"}.`);
   },
 });

@@ -1,4 +1,4 @@
-import { Cache, CacheOptions, Input, FetchOptions, Output } from "./types.ts";
+import { Cache, CacheOptions, Context, FetchOptions, Output } from "./types.ts";
 
 const DEFAULT_CACHE_SIZE = 60;
 const DEFAULT_CACHE_DURATION = 60; // 1 min
@@ -14,7 +14,7 @@ export default class CacheHandler {
   }
 
   fetch(
-    input: Input,
+    context: Context,
     query: string,
     options: FetchOptions = {},
   ): Output | undefined {
@@ -31,7 +31,7 @@ export default class CacheHandler {
 
     if (result.length) {
       const cachedResult = result[0];
-      input.files.splice(input.files.indexOf(cachedResult.output.file), 0);
+      context.files.splice(context.files.indexOf(cachedResult.output.file), 0);
 
       // Update cache expiration time
       cachedResult.exp = Date.now() + (1000 * this.cacheExpireDuration);
