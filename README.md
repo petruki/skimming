@@ -1,11 +1,11 @@
-[![Build Status](https://travis-ci.com/petruki/switcher-load-balance.svg?branch=master)](https://travis-ci.com/petruki/switcher-load-balance)
+[![Build Status](https://travis-ci.com/petruki/skimming.svg?branch=master)](https://travis-ci.com/github/petruki/skimming)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 # `skimming`
 
-Skimming is a data fetcher for Deno. The idea is provide a simple and efficient library to fetch documents online.
+Skimming is a data fetcher for Deno. The idea is to provide a simple and efficient module for fetching documents online.
 
- - Fetch documents online 'skim()' or local 'skimContent'
+ - Fetch documents online `skim()` or local `skimContent()`
  - Customizable cache
  - Customizable preview length
  - Ignore case option

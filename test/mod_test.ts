@@ -17,10 +17,10 @@ const content = `
 test({
   name: "MOD - Should return one valid entry",
   async fn(): Promise<void> {
-    const query = "criteria";
-    const files = ["readme.md"];
+    const query = "Using cache";
+    const files = ["README.md"];
     const input: Input = {
-      url: "https://raw.githubusercontent.com/petruki/switcher-api/master/",
+      url: "https://raw.githubusercontent.com/petruki/skimming/master/",
       files,
     };
 
