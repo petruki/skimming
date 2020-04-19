@@ -92,8 +92,11 @@ export default class Skimming {
 
   private async readDocument(url: string, doc: string): Promise<string> {
     const result = await fetch(`${url}${doc}`);
-    return await result.body.text().then((data: string) => {
-      return data;
-    });
+    if (result != null && result.body != null) {
+      return await result.body.text().then((data: string) => {
+        return data;
+      });
+    }
+    return '';
   }
 }
