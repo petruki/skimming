@@ -31,7 +31,7 @@ export default class CacheHandler {
 
     if (result.length) {
       const cachedResult = result[0];
-      context.files.splice(context.files.indexOf(cachedResult.output.file), 0);
+      context.files.splice(context.files.indexOf(cachedResult.output.file), 1);
 
       // Update cache expiration time
       cachedResult.exp = Date.now() + (1000 * this.cacheExpireDuration);
