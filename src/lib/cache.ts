@@ -40,11 +40,7 @@ export default class CacheHandler {
 
     if (result.length) {
       const cachedResult = result[0];
-
-      cachedResult.output.segment = cachedResult.output.segment.map(segment => {
-        return extractSegment(segment, query, previewLength == -1 ? segment.length : previewLength, options.trimContent);
-      });
-
+      
       // Update cache expiration time
       cachedResult.exp = Date.now() + (1000 * this.cacheExpireDuration);
       cachedResult.output.cache = true;
