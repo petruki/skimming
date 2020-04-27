@@ -1,7 +1,7 @@
 [![Build Status](https://travis-ci.com/petruki/skimming.svg?branch=master)](https://travis-ci.com/github/petruki/skimming)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-# `skimming`
+# `skimming` - Deno Module
 
 Skimming is a data fetcher for Deno. The idea is to provide a simple and efficient module to fetch content.
 
@@ -16,10 +16,11 @@ Skimming is a data fetcher for Deno. The idea is to provide a simple and efficie
 
 ### No cache
 ```js
-import Skimming from "https://raw.githubusercontent.com/petruki/skimming/master/mod.ts";
+import Skimming from "https://raw.githubusercontent.com/petruki/skimming/v1.0.0/mod.ts";
 
-const files = ["installation.md", "skimming.md", "README.md"];
-const context: Context = { url: "https://raw.githubusercontent.com/petruki/skimming/master/", files };
+const files = ["README.md"];
+const context = { url: "https://raw.githubusercontent.com/petruki/skimming/master/", files };
+const query = "Usage";
 
 const skimmer = new Skimming();
 skimmer.setContext(context);
@@ -30,8 +31,9 @@ const results = await skimmer.skim(query, { previewLength: 200 });
 
 ### Using cache
 ```js
-const files = ["installation.md", "skimming.md", "README.md"];
-const context: Context = { url: "https://raw.githubusercontent.com/petruki/skimming/master/", files };
+const files = ["README.md"];
+const context = { url: "https://raw.githubusercontent.com/petruki/skimming/master/", files };
+const query = "Usage";
 
 const skimmer = new Skimming({ expireDuration: 10, size: 10 });
 skimmer.setContext(context);
