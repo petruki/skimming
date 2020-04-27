@@ -21,23 +21,28 @@ export default class CacheHandler {
     const { ignoreCase, previewLength, trimContent } = options;
 
     const result = this.cache.filter((storedData) => {
-      if (ignoreCase) {
-        if (!storedData.query.toLocaleUpperCase().includes(query.toLocaleUpperCase())) {
-          return false;
+      if (storedData.query.length <= query.length) {
+        if (ignoreCase) {
+          if (!query.toLocaleUpperCase().startsWith(storedData.query.toLocaleUpperCase())) {
+            return false;
+          }
         }
-      }
-
-      if (storedData.query.includes(query) && storedData.exp > Date.now()) {
-        if (this.checkOptions(storedData, { previewLength, ignoreCase, trimContent })) {
-          return false;
+  
+        if (query.startsWith(storedData.query) && storedData.exp > Date.now()) {
+          if (this.checkOptions(storedData, { previewLength, ignoreCase, trimContent })) {
+            return false;
+          }
+          return true;
         }
-        return true;
       }
       return false;
     });
 
     if (result.length) {
       const cachedResult = result[0];
+      cachedResult.query = query;
+      cachedResult.output.segment = 
+        cachedResult.output.segment.filter(segment => segment.startsWith(query));
       
       // Update cache expiration time
       cachedResult.exp = Date.now() + (1000 * this.cacheExpireDuration);
