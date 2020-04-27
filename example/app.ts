@@ -1,10 +1,14 @@
 import { Context, Output } from "../src/lib/types.ts";
 import Skimming from "../mod.ts";
 
+function sleep(ms: number) {
+  return new Promise((fulfill) => setTimeout(fulfill, ms));
+}
+
 function printResult(entries: Output[]) {
-  entries.forEach((entry) => {
-    console.log(`File: ${entry.file} - Found: ${entry.segment.length} occurrences`);
-    entry.segment.forEach((data, index) => {
+  entries.forEach((output) => {
+    console.log(`File: ${output.file} - Found: ${output.found} - Cache: ${output.cache}`);
+    output.segment.forEach((data, index) => {
       console.log(`\nOutput #${index} ---------------\n${data}`);
     });
   });
@@ -17,10 +21,20 @@ async function main() {
     files,
   };
 
-  const skimmer = new Skimming({ expireDuration: 10, size: 10 });
+  const skimmer = new Skimming({ expireDuration: 2, size: 10 });
   skimmer.setContext(context);
 
-  const entries = await skimmer.skim("Skimming", { previewLength: -1 });
+  let entries = await skimmer.skim("Skimming()", { previewLength: 30, trimContent: false });
+  printResult(entries);
+
+  console.log('##########################')
+  entries = await skimmer.skim("Skimming()", { previewLength: 30, trimContent: false });
+  printResult(entries);
+
+  await sleep(1000);
+
+  console.log('##########################')
+  entries = await skimmer.skim("Skimming()", { previewLength: 20, trimContent: false });
   printResult(entries);
 }
 

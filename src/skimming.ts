@@ -5,12 +5,13 @@ import {
   CacheOptions
 } from "./lib/types.ts";
 import CacheHandler from "./lib/cache.ts";
-import { validateQuery, validateContext } from "./lib/utils.ts";
-import { NotContentFound } from "./lib/exceptions.ts";
+import { EXCAPE_REGEX, validateQuery, validateContext, extractSegment } from "./lib/utils.ts";
+import { NotContentFound, InvalidQuery } from "./lib/exceptions.ts";
 
-const LINE_BREAK = "\n";
-const DEFAULT_PREVIEW_LENGTH = 200;
-const DEFAULT_TRIM = true;
+export const DEFAULT_PREVIEW_LENGTH = 200;
+export const DEFAULT_TRIM = true;
+export const DEFAULT_IGNORE_CASE = false;
+export const DEFAULT_REGEX = false;
 
 export default class Skimming {
   useCache: boolean = false;
@@ -35,36 +36,42 @@ export default class Skimming {
   ): Promise<Output[]> {
     validateQuery(query);
 
-    const { ignoreCase = false } = options;
+    const { ignoreCase } = options;
     const results: Output[] = [];
 
+    let result: Output | undefined;
     if (this.useCache) {
-      const result = this.cacheHandler.fetch(this.context, query, options);
+      result = this.cacheHandler.fetch(query, options);
       if (result) {
         results.push(result);
       }
     }
 
-    for (let i = 0; i < this.context.files.length; i++) {
-      const element = this.context.files[i];
-      let content = await this.readDocument(this.context.url, element);
-
-      if (ignoreCase) {
-        content = content.toLowerCase();
-        query = query.toLowerCase();
-      }
-
-      if (content.includes(query)) {
+    if (!result) {
+      for (let i = 0; i < this.context.files.length; i++) {
+        const element = this.context.files[i];
+        let content = await this.readDocument(this.context.url, element);
+  
+        if (ignoreCase) {
+          content = content.toLowerCase();
+          query = query.toLowerCase();
+        }
+  
         const segment = this.skimContent(
           content,
           query,
-          { ignoreCase: false, previewLength: options.previewLength },
+          { 
+            ignoreCase, 
+            trimContent: options.trimContent, 
+            previewLength: options.previewLength,
+            regex: options.regex
+          },
         );
-        const output = { file: element, segment };
+        const output = { file: element, segment, found: segment.length, cache: false };
         results.push(output);
 
         if (this.useCache) {
-          this.cacheHandler.store(query, output);
+          this.cacheHandler.store(query, output, options.previewLength);
         }
       }
     }
@@ -80,9 +87,10 @@ export default class Skimming {
     validateQuery(query);
     
     const { 
-      ignoreCase = false, 
-      previewLength = DEFAULT_PREVIEW_LENGTH, 
-      trimContent = DEFAULT_TRIM 
+      ignoreCase, 
+      previewLength, 
+      trimContent,
+      regex
     } = options;
     const segments = [];
 
@@ -91,26 +99,18 @@ export default class Skimming {
       query = query.toLowerCase();
     }
 
-    let foundIndex = content.search(query);
-    while (foundIndex != -1) {
-      const from = content.substring(foundIndex);
-
-      let offset;
-      if (previewLength === -1) {
-        offset = from.substring(0, from.indexOf(LINE_BREAK));
-      } else {
-        offset = from.substring(0, previewLength === 0 ? query.length : previewLength);
+    try {
+      let foundIndex = options.regex ? content.search(query) : content.search(query.replace(EXCAPE_REGEX, '\\$&'));
+      while (foundIndex != -1) {
+        const from = content.substring(foundIndex);
+        const segment = extractSegment(from, query, previewLength, trimContent);
+        segments.push(segment);
+        content = content.replace(segment, "");
+        foundIndex = options.regex ? content.search(query) : content.search(query.replace(EXCAPE_REGEX, '\\$&'));
       }
-
-      const lastLine = offset.lastIndexOf(LINE_BREAK);
-
-      /* Extract content segment from the found query to the last complete line,
-       * However, if the previewLenght is shorter than the size of this line, it will display the established range.
-       */
-      const segment = trimContent ? offset.substring(0, lastLine > 0 ? lastLine : offset.length) : offset;
-      segments.push(segment);
-      content = content.replace(segment, "");
-      foundIndex = content.search(query);
+    } catch (e) {
+      if (e instanceof SyntaxError)
+        throw new InvalidQuery(e.message);
     }
 
     return segments;

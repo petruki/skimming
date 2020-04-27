@@ -6,11 +6,14 @@ export type Context = {
 export type Output = {
   file: string;
   segment: string[];
+  found: number;
+  cache: boolean;
 };
 
 export type Cache = {
   query: string;
   output: Output;
+  previewLength: number;
   exp: number;
 };
 
@@ -32,4 +35,5 @@ export type FetchOptions = {
   ignoreCase?: boolean;
   trimContent?: boolean;
   previewLength?: number;
+  regex?: boolean;
 };

@@ -1,4 +1,6 @@
 import { Cache, CacheOptions, Context, FetchOptions, Output } from "./types.ts";
+import { extractSegment } from "./utils.ts";
+import { DEFAULT_PREVIEW_LENGTH, DEFAULT_IGNORE_CASE, DEFAULT_TRIM } from "../skimming.ts";
 
 const DEFAULT_CACHE_SIZE = 60;
 const DEFAULT_CACHE_DURATION = 60; // 1 min
@@ -14,37 +16,49 @@ export default class CacheHandler {
   }
 
   fetch(
-    context: Context,
     query: string,
     options: FetchOptions = {},
   ): Output | undefined {
-    const { ignoreCase = false } = options;
+    const { ignoreCase, previewLength } = options;
 
     const result = this.cache.filter((storedData) => {
       if (ignoreCase) {
-        return storedData.query.toLocaleUpperCase().includes(
-          query.toLocaleUpperCase(),
-        );
+        if (!storedData.query.toLocaleUpperCase().includes(query.toLocaleUpperCase())) {
+          return false;
+        }
       }
-      return storedData.query.includes(query) && storedData.exp > Date.now();
+
+      if (storedData.query.includes(query) && storedData.exp > Date.now()) {
+        // Preview segment found in cache is smaller than the requested - should gather the content again
+        if (storedData.previewLength < (previewLength || DEFAULT_PREVIEW_LENGTH)) {
+          return false;
+        }
+        return true;
+      }
+      return false;
     });
 
     if (result.length) {
       const cachedResult = result[0];
-      context.files.splice(context.files.indexOf(cachedResult.output.file), 1);
+
+      cachedResult.output.segment = cachedResult.output.segment.map(segment => {
+        return extractSegment(segment, query, options.previewLength, options.trimContent);
+      });
 
       // Update cache expiration time
       cachedResult.exp = Date.now() + (1000 * this.cacheExpireDuration);
+      cachedResult.output.cache = true;
       return cachedResult.output;
     }
 
     return undefined;
   }
 
-  store(query: string, output: Output): void {
+  store(query: string, output: Output, previewLength: number = DEFAULT_PREVIEW_LENGTH): void {
     const toBeCached = {
       query,
       output,
+      previewLength,
       exp: Date.now() + (1000 * this.cacheExpireDuration),
     };
 

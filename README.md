@@ -10,12 +10,13 @@ Skimming is a data fetcher for Deno. The idea is to provide a simple and efficie
  - Customizable preview
  - Ignore case option
  - Trim content option to display only complete information
+ - Added Regex support
 
 # Usage
 
 ### No cache
 ```js
-import Skimming from "../mod.ts";
+import Skimming from "https://raw.githubusercontent.com/petruki/skimming/master/mod.ts";
 
 const files = ["installation.md", "skimming.md", "README.md"];
 const context: Context = { url: "https://raw.githubusercontent.com/petruki/skimming/master/", files };
@@ -29,8 +30,6 @@ const results = await skimmer.skim(query, { previewLength: 200 });
 
 ### Using cache
 ```js
-import Skimming from "../mod.ts";
-
 const files = ["installation.md", "skimming.md", "README.md"];
 const context: Context = { url: "https://raw.githubusercontent.com/petruki/skimming/master/", files };
 
