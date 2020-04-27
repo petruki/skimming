@@ -15,6 +15,7 @@ export type Cache = {
   output: Output;
   previewLength: number;
   ignoreCase: boolean;
+  trimContent: boolean;
   exp: number;
 };
 

@@ -66,7 +66,7 @@ export default class Skimming {
         results.push(output);
 
         if (this.useCache) {
-          this.cacheHandler.store(query, output, previewLength, ignoreCase);
+          this.cacheHandler.store(query, output, previewLength, ignoreCase, trimContent);
         }
       }
     }

@@ -1,7 +1,6 @@
-import { Cache, CacheOptions, Context, FetchOptions, Output } from "./types.ts";
-import { extractSegment } from "./utils.ts";
+import { Cache, CacheOptions, FetchOptions, Output } from "./types.ts";
 import { DEFAULT_PREVIEW_LENGTH } from "../skimming.ts";
-import { DEFAULT_IGNORE_CASE } from "https://raw.githubusercontent.com/petruki/skimming/master/src/skimming.ts";
+import { DEFAULT_IGNORE_CASE, DEFAULT_TRIM } from "https://raw.githubusercontent.com/petruki/skimming/master/src/skimming.ts";
 
 const DEFAULT_CACHE_SIZE = 60;
 const DEFAULT_CACHE_DURATION = 60; // 1 min
@@ -19,7 +18,7 @@ export default class CacheHandler {
   fetch(
     query: string,
     options: FetchOptions = {}): Output | undefined {
-    const { ignoreCase, previewLength } = options;
+    const { ignoreCase, previewLength, trimContent } = options;
 
     const result = this.cache.filter((storedData) => {
       if (ignoreCase) {
@@ -29,8 +28,7 @@ export default class CacheHandler {
       }
 
       if (storedData.query.includes(query) && storedData.exp > Date.now()) {
-        if (storedData.previewLength != (previewLength != undefined ? previewLength : DEFAULT_PREVIEW_LENGTH) ||
-            storedData.ignoreCase != (ignoreCase != undefined ? ignoreCase : DEFAULT_IGNORE_CASE)) {
+        if (this.checkOptions(storedData, { previewLength, ignoreCase, trimContent })) {
           return false;
         }
         return true;
@@ -53,12 +51,14 @@ export default class CacheHandler {
   store(query: string, 
     output: Output, 
     previewLength: number = DEFAULT_PREVIEW_LENGTH,
-    ignoreCase: boolean = DEFAULT_IGNORE_CASE): void {
+    ignoreCase: boolean = DEFAULT_IGNORE_CASE,
+    trimContent: boolean = DEFAULT_TRIM): void {
     const toBeCached = {
       query,
       output,
       previewLength,
       ignoreCase,
+      trimContent,
       exp: Date.now() + (1000 * this.cacheExpireDuration),
     };
 
@@ -72,6 +72,21 @@ export default class CacheHandler {
     }
   }
 
+  /**
+   * Verifies if options has been changed, if so it will gather the content from the source again
+   * 
+   * @param storedData 
+   * @param FetchOptions 
+   */
+  private checkOptions(storedData: Cache, { previewLength, ignoreCase, trimContent }: FetchOptions): boolean {
+    return storedData.previewLength != (previewLength != undefined ? previewLength : DEFAULT_PREVIEW_LENGTH) ||
+            storedData.ignoreCase != (ignoreCase != undefined ? ignoreCase : DEFAULT_IGNORE_CASE) ||
+            storedData.trimContent != (trimContent != undefined ? trimContent : DEFAULT_TRIM);
+  }
+
+  /**
+   * Releases expired data from the cache
+   */
   private updateCache(): void {
     this.cache = this.cache.filter((storedData) =>
       storedData.exp > Date.now()
