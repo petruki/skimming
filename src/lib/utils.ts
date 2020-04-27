@@ -3,7 +3,7 @@ import { InvalidQuery, InvalidContext } from "./exceptions.ts";
 import { DEFAULT_TRIM, DEFAULT_PREVIEW_LENGTH } from "../skimming.ts";
 
 export const LINE_BREAK = "\n";
-export const EXCAPE_REGEX = /[.*+?^${}()|[\]\\]/g;
+export const REGEX_ESCAPE = /[.*+?^${}()|[\]\\]/g;
 
 export function validateQuery(query: string, limit?: number): void {
   if (!query.length) {
@@ -32,7 +32,8 @@ export function validateContext(context: Context): void {
 }
 
 export function extractSegment(
-  from: string, query: string, 
+  from: string, 
+  query: string, 
   previewLength: number = DEFAULT_PREVIEW_LENGTH, 
   trimContent: boolean = DEFAULT_TRIM
   ): string {

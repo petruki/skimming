@@ -1,6 +1,6 @@
 import { Cache, CacheOptions, Context, FetchOptions, Output } from "./types.ts";
 import { extractSegment } from "./utils.ts";
-import { DEFAULT_PREVIEW_LENGTH, DEFAULT_IGNORE_CASE, DEFAULT_TRIM } from "../skimming.ts";
+import { DEFAULT_PREVIEW_LENGTH } from "../skimming.ts";
 
 const DEFAULT_CACHE_SIZE = 60;
 const DEFAULT_CACHE_DURATION = 60; // 1 min
@@ -17,8 +17,7 @@ export default class CacheHandler {
 
   fetch(
     query: string,
-    options: FetchOptions = {},
-  ): Output | undefined {
+    options: FetchOptions = {}): Output | undefined {
     const { ignoreCase, previewLength } = options;
 
     const result = this.cache.filter((storedData) => {
@@ -54,7 +53,9 @@ export default class CacheHandler {
     return undefined;
   }
 
-  store(query: string, output: Output, previewLength: number = DEFAULT_PREVIEW_LENGTH): void {
+  store(query: string, 
+    output: Output, 
+    previewLength: number = DEFAULT_PREVIEW_LENGTH): void {
     const toBeCached = {
       query,
       output,

@@ -3,13 +3,14 @@
 
 # `skimming`
 
-Skimming is a data fetcher for Deno. The idea is to provide a simple and efficient module for fetching documents online.
+Skimming is a data fetcher for Deno. The idea is to provide a simple and efficient module to fetch content.
 
  - Fetch documents online `skim()` or local `skimContent()`
  - Customizable cache
  - Customizable preview
  - Ignore case option
  - Trim content option to display only complete information
+ - Regex support
 
 # Usage
 

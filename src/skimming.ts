@@ -5,7 +5,7 @@ import {
   CacheOptions
 } from "./lib/types.ts";
 import CacheHandler from "./lib/cache.ts";
-import { EXCAPE_REGEX, validateQuery, validateContext, extractSegment } from "./lib/utils.ts";
+import { REGEX_ESCAPE, validateQuery, validateContext, extractSegment } from "./lib/utils.ts";
 import { NotContentFound, InvalidQuery } from "./lib/exceptions.ts";
 
 export const DEFAULT_PREVIEW_LENGTH = 200;
@@ -100,13 +100,13 @@ export default class Skimming {
     }
 
     try {
-      let foundIndex = options.regex ? content.search(query) : content.search(query.replace(EXCAPE_REGEX, '\\$&'));
+      let foundIndex = options.regex ? content.search(query) : content.search(query.replace(REGEX_ESCAPE, '\\$&'));
       while (foundIndex != -1) {
         const from = content.substring(foundIndex);
         const segment = extractSegment(from, query, previewLength, trimContent);
         segments.push(segment);
         content = content.replace(segment, "");
-        foundIndex = options.regex ? content.search(query) : content.search(query.replace(EXCAPE_REGEX, '\\$&'));
+        foundIndex = options.regex ? content.search(query) : content.search(query.replace(REGEX_ESCAPE, '\\$&'));
       }
     } catch (e) {
       if (e instanceof SyntaxError)

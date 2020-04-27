@@ -7,9 +7,9 @@ function sleep(ms: number) {
 
 function printResult(entries: Output[]) {
   entries.forEach((output) => {
-    console.log(`File: ${output.file} - Found: ${output.found} - Cache: ${output.cache}`);
+    console.log(`- File: ${output.file} - Found: ${output.found} - Cache: ${output.cache}`);
     output.segment.forEach((data, index) => {
-      console.log(`\nOutput #${index} ---------------\n${data}`);
+      console.log(`\n- Output #${index} -----------------------------\n${data}`);
     });
   });
 }
@@ -17,25 +17,24 @@ function printResult(entries: Output[]) {
 async function main() {
   const files = ["README.md"];
   const context: Context = {
-    url: "https://raw.githubusercontent.com/petruki/skimming/master/",
+    url: "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
     files,
   };
 
   const skimmer = new Skimming({ expireDuration: 2, size: 10 });
   skimmer.setContext(context);
 
-  let entries = await skimmer.skim("Skimming()", { previewLength: 30, trimContent: false });
-  printResult(entries);
+  console.log('##############################################');
+  let output = await skimmer.skim("Skimming({", { previewLength: 100, trimContent: true });
+  printResult(output);
 
-  console.log('##########################')
-  entries = await skimmer.skim("Skimming()", { previewLength: 30, trimContent: false });
-  printResult(entries);
+  console.log('##############################################');
+  output = await skimmer.skim("Skimming({", { previewLength: -1, trimContent: true });
+  printResult(output);
 
-  await sleep(1000);
-
-  console.log('##########################')
-  entries = await skimmer.skim("Skimming()", { previewLength: 20, trimContent: false });
-  printResult(entries);
+  console.log('##############################################');
+  output = await skimmer.skim("#{3}", { previewLength: -1, regex: true });
+  printResult(output);
 }
 
 main();
