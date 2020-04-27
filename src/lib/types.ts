@@ -14,6 +14,7 @@ export type Cache = {
   query: string;
   output: Output;
   previewLength: number;
+  ignoreCase: boolean;
   exp: number;
 };
 

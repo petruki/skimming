@@ -40,15 +40,15 @@ export function extractSegment(
     
   let offset;
   if (previewLength === -1) {
-    offset = from.substring(0, from.indexOf(LINE_BREAK));
+    offset = from.substring(0, from.indexOf(LINE_BREAK) + 1);
   } else {
     offset = from.substring(0, previewLength === 0 ? query.length : previewLength);
   }
 
-  const lastLine = offset.lastIndexOf(LINE_BREAK);
+  const lastLine = offset.lastIndexOf(LINE_BREAK) + 1;
 
   /* Extract content segment from the found query to the last complete line,
    * However, if the previewLenght is shorter than the size of this line, it will display the established range.
    */
-  return trimContent ? offset.substring(0, lastLine > 0 ? lastLine : offset.length) : offset;
+  return (trimContent ? offset.substring(0, lastLine > 0 ? lastLine : offset.length) : offset).trim();
 }

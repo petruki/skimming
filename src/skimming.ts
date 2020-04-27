@@ -36,7 +36,7 @@ export default class Skimming {
   ): Promise<Output[]> {
     validateQuery(query);
 
-    const { ignoreCase } = options;
+    const { ignoreCase, previewLength, trimContent } = options;
     const results: Output[] = [];
 
     let result: Output | undefined;
@@ -52,18 +52,13 @@ export default class Skimming {
         const element = this.context.files[i];
         let content = await this.readDocument(this.context.url, element);
   
-        if (ignoreCase) {
-          content = content.toLowerCase();
-          query = query.toLowerCase();
-        }
-  
         const segment = this.skimContent(
           content,
           query,
           { 
             ignoreCase, 
-            trimContent: options.trimContent, 
-            previewLength: options.previewLength,
+            trimContent, 
+            previewLength,
             regex: options.regex
           },
         );
@@ -71,7 +66,7 @@ export default class Skimming {
         results.push(output);
 
         if (this.useCache) {
-          this.cacheHandler.store(query, output, options.previewLength);
+          this.cacheHandler.store(query, output, previewLength, ignoreCase);
         }
       }
     }
@@ -94,19 +89,18 @@ export default class Skimming {
     } = options;
     const segments = [];
 
-    if (ignoreCase) {
-      content = content.toLowerCase();
-      query = query.toLowerCase();
-    }
+    let contentToFetch = ignoreCase ? content.toLowerCase() : content;
+    query = ignoreCase ? query.toLowerCase() : query;
 
     try {
-      let foundIndex = options.regex ? content.search(query) : content.search(query.replace(REGEX_ESCAPE, '\\$&'));
+      let foundIndex = regex ? contentToFetch.search(query) : contentToFetch.search(query.replace(REGEX_ESCAPE, '\\$&'));
       while (foundIndex != -1) {
         const from = content.substring(foundIndex);
         const segment = extractSegment(from, query, previewLength, trimContent);
         segments.push(segment);
         content = content.replace(segment, "");
-        foundIndex = options.regex ? content.search(query) : content.search(query.replace(REGEX_ESCAPE, '\\$&'));
+        contentToFetch = ignoreCase ? content.toLowerCase() : content;
+        foundIndex = regex ? contentToFetch.search(query) : contentToFetch.search(query.replace(REGEX_ESCAPE, '\\$&'));
       }
     } catch (e) {
       if (e instanceof SyntaxError)

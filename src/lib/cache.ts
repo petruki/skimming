@@ -1,6 +1,7 @@
 import { Cache, CacheOptions, Context, FetchOptions, Output } from "./types.ts";
 import { extractSegment } from "./utils.ts";
 import { DEFAULT_PREVIEW_LENGTH } from "../skimming.ts";
+import { DEFAULT_IGNORE_CASE } from "https://raw.githubusercontent.com/petruki/skimming/master/src/skimming.ts";
 
 const DEFAULT_CACHE_SIZE = 60;
 const DEFAULT_CACHE_DURATION = 60; // 1 min
@@ -28,8 +29,8 @@ export default class CacheHandler {
       }
 
       if (storedData.query.includes(query) && storedData.exp > Date.now()) {
-        // Preview segment found in cache is smaller than the requested - should gather the content again
-        if (storedData.previewLength < (previewLength || DEFAULT_PREVIEW_LENGTH)) {
+        if (storedData.previewLength != (previewLength != undefined ? previewLength : DEFAULT_PREVIEW_LENGTH) ||
+            storedData.ignoreCase != (ignoreCase != undefined ? ignoreCase : DEFAULT_IGNORE_CASE)) {
           return false;
         }
         return true;
@@ -41,7 +42,7 @@ export default class CacheHandler {
       const cachedResult = result[0];
 
       cachedResult.output.segment = cachedResult.output.segment.map(segment => {
-        return extractSegment(segment, query, options.previewLength, options.trimContent);
+        return extractSegment(segment, query, previewLength == -1 ? segment.length : previewLength, options.trimContent);
       });
 
       // Update cache expiration time
@@ -55,11 +56,13 @@ export default class CacheHandler {
 
   store(query: string, 
     output: Output, 
-    previewLength: number = DEFAULT_PREVIEW_LENGTH): void {
+    previewLength: number = DEFAULT_PREVIEW_LENGTH,
+    ignoreCase: boolean = DEFAULT_IGNORE_CASE): void {
     const toBeCached = {
       query,
       output,
       previewLength,
+      ignoreCase,
       exp: Date.now() + (1000 * this.cacheExpireDuration),
     };
 

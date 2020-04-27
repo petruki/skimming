@@ -54,7 +54,12 @@ test({
     const cacheHandle = new CacheHandle({ size: 2, expireDuration: 10 });
     cacheHandle.store(
       "my search",
-      { file: "filename.md", segment: ["my search begins somewhere here"], found: 1, cache: true },
+      { 
+        file: "filename.md", 
+        segment: ["my search begins somewhere here"], 
+        found: 1, 
+        cache: true 
+      },
     );
     await sleep(500);
     cacheHandle.store(
