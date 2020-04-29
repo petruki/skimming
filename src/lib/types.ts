@@ -12,7 +12,7 @@ export type Output = {
 
 export type Cache = {
   query: string;
-  output: Output;
+  output: Output[];
   previewLength: number;
   ignoreCase: boolean;
   trimContent: boolean;

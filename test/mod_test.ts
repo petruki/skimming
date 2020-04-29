@@ -65,6 +65,7 @@ test({
     const query = "Lorem";
     const skimmer = new Skimming();
     const results = skimmer.skimContent(content, query, { previewLength: 100 });
+    console.log(results)
     assertNotEquals(results[0].length, 100);
   },
 });

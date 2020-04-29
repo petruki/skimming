@@ -6,7 +6,7 @@ import {
 } from "./lib/types.ts";
 import CacheHandler from "./lib/cache.ts";
 import { REGEX_ESCAPE, validateQuery, validateContext, extractSegment } from "./lib/utils.ts";
-import { NotContentFound, InvalidQuery } from "./lib/exceptions.ts";
+import { NotContentFound, InvalidQuery, NonMappedInstruction } from "./lib/exceptions.ts";
 
 export const DEFAULT_PREVIEW_LENGTH = 200;
 export const DEFAULT_TRIM = true;
@@ -37,17 +37,13 @@ export default class Skimming {
     validateQuery(query);
 
     const { ignoreCase, previewLength, trimContent } = options;
-    const results: Output[] = [];
+    let results: Output[] = [];
 
-    let result: Output | undefined;
     if (this.useCache) {
-      result = this.cacheHandler.fetch(query, options);
-      if (result) {
-        results.push(result);
-      }
+      results = this.cacheHandler.fetch(query, options);
     }
 
-    if (!result) {
+    if (!results.length) {
       for (let i = 0; i < this.context.files.length; i++) {
         const element = this.context.files[i];
         let content = await this.readDocument(this.context.url, element);
@@ -62,11 +58,14 @@ export default class Skimming {
             regex: options.regex
           },
         );
-        const output = { file: element, segment, found: segment.length, cache: false };
-        results.push(output);
 
-        if (this.useCache) {
-          this.cacheHandler.store(query, output, previewLength, ignoreCase, trimContent);
+        if (segment.length) {
+          const output = { file: element, segment, found: segment.length, cache: false };
+          results.push(output);
+  
+          if (this.useCache) {
+            this.cacheHandler.store(query, output, previewLength, ignoreCase, trimContent);
+          }
         }
       }
     }
@@ -94,6 +93,7 @@ export default class Skimming {
 
     try {
       let foundIndex = regex ? contentToFetch.search(query) : contentToFetch.search(query.replace(REGEX_ESCAPE, '\\$&'));
+      let iterations = 0;
       while (foundIndex != -1) {
         const from = content.substring(foundIndex);
         const segment = extractSegment(from, query, previewLength, trimContent);
@@ -101,6 +101,11 @@ export default class Skimming {
         content = content.replace(segment, "");
         contentToFetch = ignoreCase ? content.toLowerCase() : content;
         foundIndex = regex ? contentToFetch.search(query) : contentToFetch.search(query.replace(REGEX_ESCAPE, '\\$&'));
+
+        // prevent crashing from non-mapped instruction
+        if (iterations++ > NonMappedInstruction.MAX_ITERATION) {
+          throw new NonMappedInstruction(query, options);
+        }
       }
     } catch (e) {
       if (e instanceof SyntaxError)

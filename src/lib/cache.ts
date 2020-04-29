@@ -17,7 +17,7 @@ export default class CacheHandler {
 
   fetch(
     query: string,
-    options: FetchOptions = {}): Output | undefined {
+    options: FetchOptions = {}): Output[] {
     const { ignoreCase, previewLength, trimContent } = options;
 
     const result = this.cache.filter((storedData) => {
@@ -41,16 +41,16 @@ export default class CacheHandler {
     if (result.length) {
       const cachedResult = result[0];
       cachedResult.query = query;
-      cachedResult.output.segment = 
-        cachedResult.output.segment.filter(segment => segment.startsWith(query));
-      
+      cachedResult.output = cachedResult.output.filter(output => {
+        output.cache = true;
+        return output.segment.filter(segment => segment.startsWith(query))
+      });
+
       // Update cache expiration time
       cachedResult.exp = Date.now() + (1000 * this.cacheExpireDuration);
-      cachedResult.output.cache = true;
       return cachedResult.output;
     }
-
-    return undefined;
+    return [];
   }
 
   store(query: string, 
@@ -58,23 +58,36 @@ export default class CacheHandler {
     previewLength: number = DEFAULT_PREVIEW_LENGTH,
     ignoreCase: boolean = DEFAULT_IGNORE_CASE,
     trimContent: boolean = DEFAULT_TRIM): void {
-    const toBeCached = {
-      query,
-      output,
-      previewLength,
-      ignoreCase,
-      trimContent,
-      exp: Date.now() + (1000 * this.cacheExpireDuration),
-    };
+    
+    const cachedData = this.cache.filter(cache => cache.query === query);
 
-    this.updateCache();
-
-    if (this.cache.length < this.cacheSize) {
-      this.cache.push(toBeCached);
+    if (cachedData.length) {
+      cachedData[0].output = cachedData[0].output.filter(cachedOutput => cachedOutput.file != output.file);
+      cachedData[0].output.push(output);
+      cachedData[0].exp = Date.now() + (1000 * this.cacheExpireDuration);
+      cachedData[0].previewLength = previewLength;
+      cachedData[0].trimContent = trimContent;
+      cachedData[0].ignoreCase = ignoreCase;
     } else {
-      this.cache.splice(0, 1);
-      this.cache.push(toBeCached);
+      const toBeCached = {
+        query,
+        output: [output],
+        previewLength,
+        ignoreCase,
+        trimContent,
+        exp: Date.now() + (1000 * this.cacheExpireDuration),
+      };
+
+      this.updateCache();
+
+      if (this.cache.length < this.cacheSize) {
+        this.cache.push(toBeCached);
+      } else {
+        this.cache.splice(0, 1);
+        this.cache.push(toBeCached);
+      }
     }
+
   }
 
   /**

@@ -3,6 +3,7 @@ import { InvalidQuery, InvalidContext } from "./exceptions.ts";
 import { DEFAULT_TRIM, DEFAULT_PREVIEW_LENGTH } from "../skimming.ts";
 
 export const LINE_BREAK = "\n";
+export const LAST_LINE = "$";
 export const REGEX_ESCAPE = /[.*+?^${}()|[\]\\]/g;
 
 export function validateQuery(query: string, limit?: number): void {
@@ -40,15 +41,18 @@ export function extractSegment(
     
   let offset;
   if (previewLength === -1) {
-    offset = from.substring(0, from.indexOf(LINE_BREAK) + 1);
+    // Find the last line position
+    const lastPos = from.search(LINE_BREAK);
+    offset = from.substring(0, lastPos > 0 ? lastPos :from.search(LAST_LINE));
   } else {
     offset = from.substring(0, previewLength === 0 ? query.length : previewLength);
   }
 
-  const lastLine = offset.lastIndexOf(LINE_BREAK) + 1;
+  // Find the last line position in a multiline content
+  const lastLine = offset.lastIndexOf(LINE_BREAK);
 
   /* Extract content segment from the found query to the last complete line,
    * However, if the previewLenght is shorter than the size of this line, it will display the established range.
    */
-  return (trimContent ? offset.substring(0, lastLine > 0 ? lastLine : offset.length) : offset).trim();
+  return trimContent ? offset.substring(0, lastLine > 0 ? lastLine : offset.length) : offset;
 }
