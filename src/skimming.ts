@@ -5,7 +5,7 @@ import {
   CacheOptions
 } from "./lib/types.ts";
 import CacheHandler from "./lib/cache.ts";
-import { REGEX_ESCAPE, validateQuery, validateContext, extractSegment } from "./lib/utils.ts";
+import { REGEX_ESCAPE, validateQuery, validateContext, extractSegment, findFirstPos } from "./lib/utils.ts";
 import { NotContentFound, InvalidQuery, NonMappedInstruction } from "./lib/exceptions.ts";
 
 export const DEFAULT_PREVIEW_LENGTH = 200;
@@ -92,7 +92,7 @@ export default class Skimming {
     query = ignoreCase ? query.toLowerCase() : query;
 
     try {
-      let foundIndex = regex ? contentToFetch.search(query) : contentToFetch.search(query.replace(REGEX_ESCAPE, '\\$&'));
+      let foundIndex = findFirstPos(contentToFetch, query, trimContent, regex);
       let iterations = 0;
       while (foundIndex != -1) {
         const from = content.substring(foundIndex);
@@ -100,7 +100,7 @@ export default class Skimming {
         segments.push(segment);
         content = content.replace(segment, "");
         contentToFetch = ignoreCase ? content.toLowerCase() : content;
-        foundIndex = regex ? contentToFetch.search(query) : contentToFetch.search(query.replace(REGEX_ESCAPE, '\\$&'));
+        foundIndex = findFirstPos(contentToFetch, query, trimContent, regex, true);
 
         // prevent crashing from non-mapped instruction
         if (iterations++ > NonMappedInstruction.MAX_ITERATION) {
