@@ -43,7 +43,8 @@ export default class CacheHandler {
       cachedResult.query = query;
       cachedResult.output = cachedResult.output.filter(output => {
         output.cache = true;
-        return output.segment.filter(segment => segment.startsWith(query))
+        output.segment = output.segment.filter(segment => segment.indexOf(query) >= 0);
+        return output.segment.length;
       });
 
       // Update cache expiration time
