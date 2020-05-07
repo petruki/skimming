@@ -1,7 +1,7 @@
 import { Context } from "./types.ts";
 import { InvalidQuery, InvalidContext } from "./exceptions.ts";
-import { DEFAULT_TRIM, DEFAULT_PREVIEW_LENGTH } from "../skimming.ts";
-import { DEFAULT_REGEX } from "https://raw.githubusercontent.com/petruki/skimming/master/src/skimming.ts";
+import { DEFAULT_TRIM, DEFAULT_PREVIEW_LENGTH, DEFAULT_REGEX } from "../skimming.ts";
+
 export const LINE_BREAK = "\n";
 export const LAST_LINE = "$";
 export const REGEX_ESCAPE = /[.*+?^${}()|[\]\\]/g;

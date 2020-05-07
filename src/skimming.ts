@@ -5,7 +5,7 @@ import {
   CacheOptions
 } from "./lib/types.ts";
 import CacheHandler from "./lib/cache.ts";
-import { REGEX_ESCAPE, validateQuery, validateContext, extractSegment, findFirstPos } from "./lib/utils.ts";
+import { validateQuery, validateContext, extractSegment, findFirstPos } from "./lib/utils.ts";
 import { NotContentFound, InvalidQuery, NonMappedInstruction } from "./lib/exceptions.ts";
 
 export const DEFAULT_PREVIEW_LENGTH = 200;
@@ -119,7 +119,7 @@ export default class Skimming {
     const result = await fetch(`${url}${doc}`);
     if (result != null && result.body != null) {
       if (result.status === 200) {
-        return await result.body.text().then((data: string) => {
+        return await result.text().then((data: string) => {
           return data;
         });
       }

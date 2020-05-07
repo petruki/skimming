@@ -1,6 +1,5 @@
 import { Cache, CacheOptions, FetchOptions, Output } from "./types.ts";
-import { DEFAULT_PREVIEW_LENGTH } from "../skimming.ts";
-import { DEFAULT_IGNORE_CASE, DEFAULT_TRIM } from "https://raw.githubusercontent.com/petruki/skimming/master/src/skimming.ts";
+import { DEFAULT_PREVIEW_LENGTH, DEFAULT_IGNORE_CASE, DEFAULT_TRIM } from "../skimming.ts";
 
 const DEFAULT_CACHE_SIZE = 60;
 const DEFAULT_CACHE_DURATION = 60; // 1 min
@@ -88,7 +87,6 @@ export default class CacheHandler {
         this.cache.push(toBeCached);
       }
     }
-
   }
 
   /**
