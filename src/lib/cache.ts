@@ -22,7 +22,7 @@ export default class CacheHandler {
     const result = this.cache.filter((storedData) => {
       if (storedData.query.length <= query.length) {
         if (ignoreCase) {
-          if (!query.toLocaleUpperCase().startsWith(storedData.query.toLocaleUpperCase())) {
+          if (!query.toLowerCase().startsWith(storedData.query.toLowerCase())) {
             return false;
           }
         }
@@ -42,7 +42,12 @@ export default class CacheHandler {
       cachedResult.query = query;
       cachedResult.output = cachedResult.output.filter(output => {
         output.cache = true;
-        output.segment = output.segment.filter(segment => segment.indexOf(query) >= 0);
+        output.segment = output.segment.filter(segment => {
+          if (ignoreCase)
+            return segment.toLowerCase().indexOf(query.toLowerCase()) >= 0;
+          else
+            return segment.indexOf(query) >= 0;
+        });
         return output.segment.length;
       });
 
