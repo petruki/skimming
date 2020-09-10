@@ -5,9 +5,9 @@
 
 Skimming is a data fetcher for Deno. The idea is to provide a simple and efficient module to fetch content.
 
- - Fetch documents online `skim()` or local `skimContent()`
+ - Fetch documents online `skim()` or in memory `skimContent()`
  - Customizable cache
- - Customizable preview
+ - Customizable content preview
  - Ignore case option
  - Trim content option to display only complete information
  - Regex support
@@ -16,7 +16,7 @@ Skimming is a data fetcher for Deno. The idea is to provide a simple and efficie
 
 ### No cache
 ```js
-import Skimming from "https://raw.githubusercontent.com/petruki/skimming/v1.0.0/mod.ts";
+import { Skimming } from "https://deno.land/x/skimming/mod.ts";
 
 const files = ["README.md"];
 const context = { url: "https://raw.githubusercontent.com/petruki/skimming/master/", files };
