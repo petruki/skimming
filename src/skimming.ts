@@ -1,19 +1,14 @@
-import {
-  Context,
-  FetchOptions,
-  Output,
-  CacheOptions
-} from "./lib/types.ts";
-import CacheHandler from "./lib/cache.ts";
+import { Context, FetchOptions, Output, CacheOptions } from "./lib/types.ts";
 import { validateQuery, validateContext, extractSegment, findFirstPos } from "./lib/utils.ts";
 import { NotContentFound, InvalidQuery, NonMappedInstruction } from "./lib/exceptions.ts";
+import CacheHandler from "./lib/cache.ts";
 
 export const DEFAULT_PREVIEW_LENGTH = 200;
 export const DEFAULT_TRIM = true;
 export const DEFAULT_IGNORE_CASE = false;
 export const DEFAULT_REGEX = false;
 
-export default class Skimming {
+export class Skimming {
   useCache: boolean = false;
   private cacheHandler!: CacheHandler;
   private context!: Context;
@@ -25,16 +20,23 @@ export default class Skimming {
     }
   }
 
+  /**
+   * Define the URL and files that will be analysed
+   */
   setContext(context: Context): void {
     validateContext(context);
     this.context = context;
   }
 
+  /**
+   * Start skimming into the content provided by setContext()
+   */
   async skim(
     query: string,
     options: FetchOptions = {},
   ): Promise<Output[]> {
     validateQuery(query);
+    validateContext(this.context);
 
     const { ignoreCase, previewLength, trimContent } = options;
     let results: Output[] = [];
@@ -73,6 +75,9 @@ export default class Skimming {
     return results;
   }
 
+  /**
+   * Skimming a given content using the provided params
+   */
   skimContent(
     content: string,
     query: string,
@@ -88,6 +93,7 @@ export default class Skimming {
     } = options;
     const segments = [];
 
+    //prepare content if ignore case is enabled
     let contentToFetch = ignoreCase ? content.toLowerCase() : content;
     query = ignoreCase ? query.toLowerCase() : query;
 
@@ -115,6 +121,9 @@ export default class Skimming {
     return segments;
   }
 
+  /**
+   * Fetch document online located at the provided url
+   */
   private async readDocument(url: string, doc: string): Promise<string> {
     const result = await fetch(`${url}${doc}`);
     if (result != null && result.body != null) {

@@ -17,8 +17,8 @@ export function validateQuery(query: string, limit?: number): void {
 }
 
 export function validateContext(context: Context): void {
-  if (!context.url.length) {
-    throw new InvalidContext("url is empty");
+  if (!context || !context.url.length) {
+    throw new InvalidContext("context is not defined properly - use setContext() to define the context");
   }
 
   context.files.forEach(file => {
@@ -32,6 +32,14 @@ export function validateContext(context: Context): void {
   });
 }
 
+/**
+ * Return the segment to be displayed based on the segment rules
+ * 
+ * @param from where the content must be extracted
+ * @param query used to limit the segment size when previewLength is zero
+ * @param previewLength number of characters that must be displayed
+ * @param trimContent find the next line break within the defined preview length
+ */
 export function extractSegment(
   from: string, 
   query: string,
@@ -61,6 +69,13 @@ export function extractSegment(
   return (trimContent ? offset.substring(0, lastLine > 0 ? lastLine : offset.length) : offset).trim();
 }
 
+/**
+ * Return the starting position where a segment must be displayed
+
+ * @param trimContent if true, it will try to find the first line break or content starting position
+ * @param regex if true, it will prepare the query to use regex notation
+ * @param next if true, it will continue from where it stopped
+ */
 export function findFirstPos(
   contentToFetch: string, 
   query: string, 

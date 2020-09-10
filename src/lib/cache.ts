@@ -14,6 +14,9 @@ export default class CacheHandler {
     this.cacheSize = cacheOptions.size;
   }
 
+  /**
+   * Fetch content in memory
+   */
   fetch(
     query: string,
     options: FetchOptions = {}): Output[] {
@@ -28,10 +31,7 @@ export default class CacheHandler {
         }
   
         if (query.startsWith(storedData.query) && storedData.exp > Date.now()) {
-          if (this.checkOptions(storedData, { previewLength, ignoreCase, trimContent })) {
-            return false;
-          }
-          return true;
+          return !this.checkOptions(storedData, { previewLength, ignoreCase, trimContent });
         }
       }
       return false;

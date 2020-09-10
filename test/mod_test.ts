@@ -1,6 +1,5 @@
 import { assertEquals, assertNotEquals, assertThrows, assertThrowsAsync } from "https://deno.land/std/testing/asserts.ts";
-import { Context } from "../src/lib/types.ts";
-import Skimming from "../mod.ts";
+import { Skimming, Context } from "../mod.ts";
 import { InvalidQuery, InvalidContext } from "../src/lib/exceptions.ts";
 
 const { test } = Deno;
@@ -101,7 +100,7 @@ test({
 
     const skimmer = new Skimming();
     assertThrows(() => {  skimmer.setContext(context); }, 
-      InvalidContext, `Invalid context. Cause: ${"url is empty"}.`);
+      InvalidContext, `Invalid context. Cause: ${"context is not defined properly - use setContext() to define the context"}.`);
   },
 });
 
