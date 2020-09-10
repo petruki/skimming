@@ -1,5 +1,4 @@
-import { Context, Output } from "../src/lib/types.ts";
-import Skimming from "../mod.ts";
+import { Skimming, Context, Output } from "../mod.ts";
 
 function sleep(ms: number) {
   return new Promise((fulfill) => setTimeout(fulfill, ms));
