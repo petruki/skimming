@@ -1,4 +1,4 @@
-***
+---
 
 <div align="center">
 <b>Skimming</b><br>
@@ -13,11 +13,12 @@ Tag, Customize and Search with Skimming for Deno
 
 </div>
 
-***
+---
 
 # `skimming` - Deno Module
 
-Skimming is a content fetcher for Deno. The idea is to provide a simple and efficient and customizable way to fetch content from the web.
+Skimming is a content fetcher for Deno. The idea is to provide a simple and
+efficient and customizable way to fetch content from the web.
 
 - Fetch documents online `skim()` or local with `skimContent()`
 - Customizable cache
@@ -75,4 +76,4 @@ Use `deno test -A --unstable` to run tests.
 
 ## Contributing
 
-Please do open an issue or PR if you feel you have something cool to add.
+Please do open an issue if you have some cool ideas to contribute.
