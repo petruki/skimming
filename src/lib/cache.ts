@@ -1,5 +1,9 @@
 import { Cache, CacheOptions, FetchOptions, Output } from "./types.ts";
-import { DEFAULT_PREVIEW_LENGTH, DEFAULT_IGNORE_CASE, DEFAULT_TRIM } from "../skimming.ts";
+import {
+  DEFAULT_IGNORE_CASE,
+  DEFAULT_PREVIEW_LENGTH,
+  DEFAULT_TRIM,
+} from "../skimming.ts";
 
 const DEFAULT_CACHE_SIZE = 60;
 const DEFAULT_CACHE_DURATION = 60; // 1 min
@@ -19,7 +23,8 @@ export default class CacheHandler {
    */
   fetch(
     query: string,
-    options: FetchOptions = {}): Output[] {
+    options: FetchOptions = {},
+  ): Output[] {
     const { ignoreCase, previewLength, trimContent } = options;
 
     const result = this.cache.filter((storedData) => {
@@ -29,9 +34,13 @@ export default class CacheHandler {
             return false;
           }
         }
-  
+
         if (query.startsWith(storedData.query) && storedData.exp > Date.now()) {
-          return !this.checkOptions(storedData, { previewLength, ignoreCase, trimContent });
+          return !this.checkOptions(storedData, {
+            previewLength,
+            ignoreCase,
+            trimContent,
+          });
         }
       }
       return false;
@@ -40,13 +49,14 @@ export default class CacheHandler {
     if (result.length) {
       const cachedResult = result[0];
       cachedResult.query = query;
-      cachedResult.output = cachedResult.output.filter(output => {
+      cachedResult.output = cachedResult.output.filter((output) => {
         output.cache = true;
-        output.segment = output.segment.filter(segment => {
-          if (ignoreCase)
+        output.segment = output.segment.filter((segment) => {
+          if (ignoreCase) {
             return segment.toLowerCase().indexOf(query.toLowerCase()) >= 0;
-          else
+          } else {
             return segment.indexOf(query) >= 0;
+          }
         });
         return output.segment.length;
       });
@@ -58,16 +68,19 @@ export default class CacheHandler {
     return [];
   }
 
-  store(query: string, 
-    output: Output, 
+  store(
+    query: string,
+    output: Output,
     previewLength: number = DEFAULT_PREVIEW_LENGTH,
     ignoreCase: boolean = DEFAULT_IGNORE_CASE,
-    trimContent: boolean = DEFAULT_TRIM): void {
-    
-    const cachedData = this.cache.filter(cache => cache.query === query);
+    trimContent: boolean = DEFAULT_TRIM,
+  ): void {
+    const cachedData = this.cache.filter((cache) => cache.query === query);
 
     if (cachedData.length) {
-      cachedData[0].output = cachedData[0].output.filter(cachedOutput => cachedOutput.file != output.file);
+      cachedData[0].output = cachedData[0].output.filter((cachedOutput) =>
+        cachedOutput.file != output.file
+      );
       cachedData[0].output.push(output);
       cachedData[0].exp = Date.now() + (1000 * this.cacheExpireDuration);
       cachedData[0].previewLength = previewLength;
@@ -96,24 +109,28 @@ export default class CacheHandler {
 
   /**
    * Verifies if options has been changed, if so it will gather the content from the source again
-   * 
-   * @param storedData 
-   * @param FetchOptions 
+   *
+   * @param storedData
+   * @param FetchOptions
    */
-  private checkOptions(storedData: Cache, { previewLength, ignoreCase, trimContent }: FetchOptions): boolean {
-    return storedData.previewLength != (previewLength != undefined ? previewLength : DEFAULT_PREVIEW_LENGTH) ||
-            storedData.ignoreCase != (ignoreCase != undefined ? ignoreCase : DEFAULT_IGNORE_CASE) ||
-            storedData.trimContent != (trimContent != undefined ? trimContent : DEFAULT_TRIM);
+  private checkOptions(
+    storedData: Cache,
+    { previewLength, ignoreCase, trimContent }: FetchOptions,
+  ): boolean {
+    return storedData.previewLength !=
+        (previewLength != undefined ? previewLength : DEFAULT_PREVIEW_LENGTH) ||
+      storedData.ignoreCase !=
+        (ignoreCase != undefined ? ignoreCase : DEFAULT_IGNORE_CASE) ||
+      storedData.trimContent !=
+        (trimContent != undefined ? trimContent : DEFAULT_TRIM);
   }
 
   /**
    * Releases expired data from the cache
    */
   private updateCache(): void {
-    this.cache = this.cache.filter((storedData) =>
-      storedData.exp > Date.now()
-    );
-    
+    this.cache = this.cache.filter((storedData) => storedData.exp > Date.now());
+
     this.cache = this.cache.sort((cachea: Cache, cacheb: Cache) =>
       cachea.exp > cacheb.exp ? 1 : -1
     );

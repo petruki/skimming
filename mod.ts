@@ -1,2 +1,7 @@
-export { Skimming }  from './src/skimming.ts';
-export type { Context, FetchOptions, Output, CacheOptions } from './src/lib/types.ts';
+export { Skimming } from "./src/skimming.ts";
+export type {
+  CacheOptions,
+  Context,
+  FetchOptions,
+  Output,
+} from "./src/lib/types.ts";

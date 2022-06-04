@@ -1,6 +1,10 @@
-import { assertEquals, assertNotEquals, assertThrows, assertThrowsAsync } from "https://deno.land/std/testing/asserts.ts";
-import { Skimming, Context } from "../mod.ts";
-import { InvalidQuery, InvalidContext } from "../src/lib/exceptions.ts";
+import {
+  assertEquals,
+  assertNotEquals,
+  assertThrows,
+} from "https://deno.land/std@0.142.0/testing/asserts.ts";
+import { Context, Skimming } from "../mod.ts";
+import { InvalidContext } from "../src/lib/exceptions.ts";
 
 const { test } = Deno;
 
@@ -20,7 +24,8 @@ test({
     const query = "Skimming";
     const files = ["README.md"];
     const context: Context = {
-      url: "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
+      url:
+        "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
       files,
     };
 
@@ -33,18 +38,25 @@ test({
 
 test({
   name: "MOD - Should NOT return - Exception: empty query",
-  async fn(): Promise<void> {
-    const query = '';
+  fn(): void {
+    const query = "";
     const files = ["README.md"];
     const context: Context = {
-      url: "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
+      url:
+        "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
       files,
     };
 
     const skimmer = new Skimming();
     skimmer.setContext(context);
-    assertThrowsAsync(async () => { await skimmer.skim(query); }, 
-      InvalidQuery, `Invalid query input. Cause: ${"it is empty"}.`);
+
+    skimmer.skim(query).catch((error) => {
+      assertEquals(error.name, "InvalidQuery");
+      assertEquals(
+        error.message,
+        `Invalid query input. Cause: ${"it is empty"}.`,
+      );
+    });
   },
 });
 
@@ -53,7 +65,10 @@ test({
   fn(): void {
     const query = "Lorem";
     const skimmer = new Skimming();
-    const results = skimmer.skimContent(content, query, { previewLength: 100, trimContent: false });
+    const results = skimmer.skimContent(content, query, {
+      previewLength: 100,
+      trimContent: false,
+    });
     assertEquals(results[0].length, 100);
   },
 });
@@ -64,7 +79,7 @@ test({
     const query = "Lorem";
     const skimmer = new Skimming();
     const results = skimmer.skimContent(content, query, { previewLength: 100 });
-    console.log(results)
+    console.log(results);
     assertNotEquals(results[0].length, 100);
   },
 });
@@ -84,14 +99,17 @@ test({
   fn(): void {
     const query = "Lorem";
     const skimmer = new Skimming();
-    const results = skimmer.skimContent(content, query, { previewLength: 20, ignoreCase: true });
+    const results = skimmer.skimContent(content, query, {
+      previewLength: 20,
+      ignoreCase: true,
+    });
     assertEquals(results.length, 3);
   },
 });
 
 test({
   name: "MOD - Should NOT return - Exception: url is empty",
-  async fn(): Promise<void> {
+  fn(): void {
     const files = ["README.md"];
     const context: Context = {
       url: "",
@@ -99,29 +117,36 @@ test({
     };
 
     const skimmer = new Skimming();
-    assertThrows(() => {  skimmer.setContext(context); }, 
-      InvalidContext, `Invalid context. Cause: ${"context is not defined properly - use setContext() to define the context"}.`);
+    assertThrows(
+      () => skimmer.setContext(context),
+      InvalidContext,
+      `Invalid context. Cause: ${"context is not defined properly - use setContext() to define the context"}.`,
+    );
   },
 });
 
 test({
   name: "MOD - Should NOT return - Exception: file name is empty",
-  async fn(): Promise<void> {
+  fn(): void {
     const files = [""];
     const context: Context = {
-      url: "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
+      url:
+        "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
       files,
     };
 
     const skimmer = new Skimming();
-    assertThrows(() => {  skimmer.setContext(context); }, 
-      InvalidContext, `Invalid context. Cause: ${"file name is empty"}.`);
+    assertThrows(
+      () => skimmer.setContext(context),
+      InvalidContext,
+      `Invalid context. Cause: ${"file name is empty"}.`,
+    );
   },
 });
 
 test({
   name: "MOD - Should NOT return - Exception: endpoint might not work",
-  async fn(): Promise<void> {
+  fn(): void {
     const files = ["README.md"];
     const context: Context = {
       url: "https://raw.githubusercontent.com/petruki/skimming/master", // Here, it is missing a slash in the end
@@ -129,8 +154,11 @@ test({
     };
 
     const skimmer = new Skimming();
-    assertThrows(() => { skimmer.setContext(context); }, 
-      InvalidContext, `Invalid context. Cause: this enpoint might not work: ${context.url}${"README.md"}.`);
+    assertThrows(
+      () => skimmer.setContext(context),
+      InvalidContext,
+      `Invalid context. Cause: this enpoint might not work: ${context.url}${"README.md"}.`,
+    );
   },
 });
 
@@ -140,7 +168,8 @@ test({
     const query = "Skimming";
     const files = ["README.md"];
     const context: Context = {
-      url: "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
+      url:
+        "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
       files,
     };
 
@@ -149,13 +178,13 @@ test({
 
     let output = await skimmer.skim(query);
     assertEquals(output.length, 1);
-    output.forEach(data => {
+    output.forEach((data) => {
       assertEquals(data.cache, false);
     });
 
     output = await skimmer.skim(query);
     assertEquals(output.length, 1);
-    output.forEach(data => {
+    output.forEach((data) => {
       assertEquals(data.cache, true);
     });
   },
@@ -167,51 +196,66 @@ test({
     const query = "Skimming({";
     const files = ["README.md"];
     const context: Context = {
-      url: "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
+      url:
+        "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
       files,
     };
 
     const skimmer = new Skimming({ expireDuration: 10, size: 10 });
     skimmer.setContext(context);
 
-    let output = await skimmer.skim(query, { previewLength: 20, trimContent: false });
-    assertEquals(output.length, 1);
-    output.forEach(data => {
-      assertEquals(data.segment[0].length, 20);
+    let output = await skimmer.skim(query, {
+      previewLength: 20,
+      trimContent: false,
     });
 
-    output = await skimmer.skim(query, { previewLength: 10, trimContent: false });
     assertEquals(output.length, 1);
-    output.forEach(data => {
-      assertEquals(data.segment[0].length, 10);
+    output.forEach((data) => assertEquals(data.segment[0].length, 20));
+
+    output = await skimmer.skim(query, {
+      previewLength: 10,
+      trimContent: false,
     });
+
+    assertEquals(output.length, 1);
+    output.forEach((data) => assertEquals(data.segment[0].length, 10));
   },
 });
 
 test({
-  name: "MOD - Should return value from OUTSIDE the cache with new preview length",
+  name:
+    "MOD - Should return value from OUTSIDE the cache with new preview length",
   async fn(): Promise<void> {
     const query = "Skimming({";
     const files = ["README.md"];
     const context: Context = {
-      url: "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
+      url:
+        "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
       files,
     };
 
     const skimmer = new Skimming({ expireDuration: 10, size: 10 });
     skimmer.setContext(context);
 
-    let output = await skimmer.skim(query, { previewLength: 20, trimContent: false });
+    let output = await skimmer.skim(query, {
+      previewLength: 20,
+      trimContent: false,
+    });
+
     assertEquals(output.length, 1);
-    output.forEach(data => {
+    output.forEach((data) => {
       assertEquals(data.cache, false);
       assertEquals(data.segment[0].length, 20);
     });
 
     // preview length now is greater than the previous value
-    output = await skimmer.skim(query, { previewLength: 30, trimContent: false });
+    output = await skimmer.skim(query, {
+      previewLength: 30,
+      trimContent: false,
+    });
+
     assertEquals(output.length, 1);
-    output.forEach(data => {
+    output.forEach((data) => {
       assertEquals(data.cache, false);
       assertEquals(data.segment[0].length, 30);
     });
@@ -224,14 +268,19 @@ test({
     const query = "#{3}";
     const files = ["README.md"];
     const context: Context = {
-      url: "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
+      url:
+        "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
       files,
     };
 
     const skimmer = new Skimming();
     skimmer.setContext(context);
 
-    let output = await skimmer.skim(query, { previewLength: -1, regex: true });
+    const output = await skimmer.skim(query, {
+      previewLength: -1,
+      regex: true,
+    });
+
     assertEquals(output.length, 1);
     assertEquals(output[0].segment[0], "### No cache");
     assertEquals(output[0].segment[1], "### Using cache");
