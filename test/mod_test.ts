@@ -2,10 +2,9 @@ import {
   assertEquals,
   assertNotEquals,
   assertThrows,
-  assertThrowsAsync,
-} from "https://deno.land/std/testing/asserts.ts";
+} from "https://deno.land/std@0.142.0/testing/asserts.ts";
 import { Context, Skimming } from "../mod.ts";
-import { InvalidContext, InvalidQuery } from "../src/lib/exceptions.ts";
+import { InvalidContext } from "../src/lib/exceptions.ts";
 
 const { test } = Deno;
 
@@ -50,13 +49,14 @@ test({
 
     const skimmer = new Skimming();
     skimmer.setContext(context);
-    assertThrowsAsync(
-      async () => {
-        await skimmer.skim(query);
-      },
-      InvalidQuery,
-      `Invalid query input. Cause: ${"it is empty"}.`,
-    );
+
+    skimmer.skim(query).catch((error) => {
+      assertEquals(error.name, "InvalidQuery");
+      assertEquals(
+        error.message,
+        `Invalid query input. Cause: ${"it is empty"}.`,
+      );
+    });
   },
 });
 
@@ -118,9 +118,7 @@ test({
 
     const skimmer = new Skimming();
     assertThrows(
-      () => {
-        skimmer.setContext(context);
-      },
+      () => skimmer.setContext(context),
       InvalidContext,
       `Invalid context. Cause: ${"context is not defined properly - use setContext() to define the context"}.`,
     );
@@ -139,9 +137,7 @@ test({
 
     const skimmer = new Skimming();
     assertThrows(
-      () => {
-        skimmer.setContext(context);
-      },
+      () => skimmer.setContext(context),
       InvalidContext,
       `Invalid context. Cause: ${"file name is empty"}.`,
     );
@@ -159,9 +155,7 @@ test({
 
     const skimmer = new Skimming();
     assertThrows(
-      () => {
-        skimmer.setContext(context);
-      },
+      () => skimmer.setContext(context),
       InvalidContext,
       `Invalid context. Cause: this enpoint might not work: ${context.url}${"README.md"}.`,
     );
@@ -214,19 +208,17 @@ test({
       previewLength: 20,
       trimContent: false,
     });
+
     assertEquals(output.length, 1);
-    output.forEach((data) => {
-      assertEquals(data.segment[0].length, 20);
-    });
+    output.forEach((data) => assertEquals(data.segment[0].length, 20));
 
     output = await skimmer.skim(query, {
       previewLength: 10,
       trimContent: false,
     });
+
     assertEquals(output.length, 1);
-    output.forEach((data) => {
-      assertEquals(data.segment[0].length, 10);
-    });
+    output.forEach((data) => assertEquals(data.segment[0].length, 10));
   },
 });
 
@@ -249,6 +241,7 @@ test({
       previewLength: 20,
       trimContent: false,
     });
+
     assertEquals(output.length, 1);
     output.forEach((data) => {
       assertEquals(data.cache, false);
@@ -260,6 +253,7 @@ test({
       previewLength: 30,
       trimContent: false,
     });
+
     assertEquals(output.length, 1);
     output.forEach((data) => {
       assertEquals(data.cache, false);
@@ -286,6 +280,7 @@ test({
       previewLength: -1,
       regex: true,
     });
+
     assertEquals(output.length, 1);
     assertEquals(output[0].segment[0], "### No cache");
     assertEquals(output[0].segment[1], "### Using cache");
