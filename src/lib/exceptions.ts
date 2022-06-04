@@ -22,10 +22,12 @@ export class NotContentFound extends Error {
 }
 
 export class NonMappedInstruction extends Error {
-  static MAX_ITERATION: number = 1000;
+  static MAX_ITERATION = 1000;
 
   constructor(query: string, options: FetchOptions) {
-    super(`Request exit to prevent crashing - query: ${query} - options: ${options}`);
+    super(
+      `Request exit to prevent crashing - query: ${query} - options: ${options}`,
+    );
     this.name = this.constructor.name;
   }
 }

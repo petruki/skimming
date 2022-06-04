@@ -13,7 +13,12 @@ test({
     const cacheHandle = new CacheHandle({ size: 1, expireDuration: 10 });
     cacheHandle.store(
       "my search",
-      { file: "filename.md", segment: ["my search begins somewhere here"], found: 1, cache: true },
+      {
+        file: "filename.md",
+        segment: ["my search begins somewhere here"],
+        found: 1,
+        cache: true,
+      },
     );
     assertEquals(cacheHandle.cache.length, 1);
   },
@@ -25,7 +30,12 @@ test({
     const cacheHandle = new CacheHandle({ size: 2, expireDuration: 10 });
     cacheHandle.store(
       "my search",
-      { file: "filename.md", segment: ["my search begins somewhere here"], found: 1, cache: true },
+      {
+        file: "filename.md",
+        segment: ["my search begins somewhere here"],
+        found: 1,
+        cache: true,
+      },
     );
     await sleep(500);
     cacheHandle.store(
@@ -33,8 +43,8 @@ test({
       {
         file: "filename2.md",
         segment: ["another search begins somewhere here"],
-        found: 1, 
-        cache: true
+        found: 1,
+        cache: true,
       },
     );
     assertEquals(cacheHandle.cache.length, 2);
@@ -42,7 +52,12 @@ test({
     await sleep(500);
     cacheHandle.store(
       "Is there any space",
-      { file: "filename3.md", segment: ["Is there any space to store me?"], found: 1, cache: true },
+      {
+        file: "filename3.md",
+        segment: ["Is there any space to store me?"],
+        found: 1,
+        cache: true,
+      },
     );
     assertEquals(cacheHandle.cache.length, 2);
   },
@@ -54,11 +69,11 @@ test({
     const cacheHandle = new CacheHandle({ size: 2, expireDuration: 10 });
     cacheHandle.store(
       "my search",
-      { 
-        file: "filename.md", 
-        segment: ["my search begins somewhere here"], 
-        found: 1, 
-        cache: true 
+      {
+        file: "filename.md",
+        segment: ["my search begins somewhere here"],
+        found: 1,
+        cache: true,
       },
     );
     await sleep(500);
@@ -67,8 +82,8 @@ test({
       {
         file: "filename2.md",
         segment: ["another search begins somewhere here"],
-        found: 1, 
-        cache: true
+        found: 1,
+        cache: true,
       },
     );
 
@@ -86,7 +101,12 @@ test({
     const cacheHandle = new CacheHandle({ size: 3, expireDuration: 10 });
     cacheHandle.store(
       "my search",
-      { file: "filename.md", segment: ["my search begins somewhere here"], found: 1, cache: true },
+      {
+        file: "filename.md",
+        segment: ["my search begins somewhere here"],
+        found: 1,
+        cache: true,
+      },
     );
     await sleep(500);
     cacheHandle.store(
@@ -94,14 +114,14 @@ test({
       {
         file: "filename2.md",
         segment: ["another search begins somewhere here"],
-        found: 1, 
-        cache: true
+        found: 1,
+        cache: true,
       },
     );
 
     assertEquals(cacheHandle.cache[0].query, "my search");
     assertEquals(cacheHandle.cache[1].query, "another search");
-    
+
     cacheHandle.fetch("my search");
 
     // It remains the same order because fetch does not reorder
@@ -111,7 +131,12 @@ test({
     await sleep(500);
     cacheHandle.store(
       "Is there any space",
-      { file: "filename3.md", segment: ["Is there any space to store me?"], found: 1, cache: true },
+      {
+        file: "filename3.md",
+        segment: ["Is there any space to store me?"],
+        found: 1,
+        cache: true,
+      },
     );
 
     assertEquals(cacheHandle.cache[0].query, "another search");
@@ -126,7 +151,12 @@ test({
     const cacheHandle = new CacheHandle({ size: 10, expireDuration: 1 });
     cacheHandle.store(
       "my search",
-      { file: "filename.md", segment: ["my search begins somewhere here"], found: 1, cache: true },
+      {
+        file: "filename.md",
+        segment: ["my search begins somewhere here"],
+        found: 1,
+        cache: true,
+      },
     );
     await sleep(1000);
     cacheHandle.store(
@@ -134,14 +164,19 @@ test({
       {
         file: "filename2.md",
         segment: ["another search begins somewhere here"],
-        found: 1, 
-        cache: true
+        found: 1,
+        cache: true,
       },
     );
     await sleep(500);
     cacheHandle.store(
       "Is there any space",
-      { file: "filename3.md", segment: ["Is there any space to store me?"], found: 1, cache: true },
+      {
+        file: "filename3.md",
+        segment: ["Is there any space to store me?"],
+        found: 1,
+        cache: true,
+      },
     );
 
     assertEquals(cacheHandle.cache[0].query, "another search");

@@ -1,19 +1,30 @@
-import { Context, FetchOptions, Output, CacheOptions } from "./lib/types.ts";
-import { validateQuery, validateContext, extractSegment, findFirstPos } from "./lib/utils.ts";
-import { NotContentFound, InvalidQuery, NonMappedInstruction } from "./lib/exceptions.ts";
+import { CacheOptions, Context, FetchOptions, Output } from "./lib/types.ts";
+import {
+  extractSegment,
+  findFirstPos,
+  validateContext,
+  validateQuery,
+} from "./lib/utils.ts";
+import {
+  InvalidQuery,
+  NonMappedInstruction,
+  NotContentFound,
+} from "./lib/exceptions.ts";
 import CacheHandler from "./lib/cache.ts";
 
 export const DEFAULT_PREVIEW_LENGTH = 200;
 export const DEFAULT_TRIM = true;
 export const DEFAULT_IGNORE_CASE = false;
 export const DEFAULT_REGEX = false;
+export const DEFAULT_NEXT = false;
 
 export class Skimming {
-  useCache: boolean = false;
+  useCache: boolean;
   private cacheHandler!: CacheHandler;
   private context!: Context;
 
   constructor(cacheOptions?: CacheOptions) {
+    this.useCache = false;
     if (cacheOptions) {
       this.cacheHandler = new CacheHandler(cacheOptions);
       this.useCache = true;
@@ -48,25 +59,36 @@ export class Skimming {
     if (!results.length) {
       for (let i = 0; i < this.context.files.length; i++) {
         const element = this.context.files[i];
-        let content = await this.readDocument(this.context.url, element);
-  
+        const content = await this.readDocument(this.context.url, element);
+
         const segment = this.skimContent(
           content,
           query,
-          { 
-            ignoreCase, 
-            trimContent, 
+          {
+            ignoreCase,
+            trimContent,
             previewLength,
-            regex: options.regex
+            regex: options.regex,
           },
         );
 
         if (segment.length) {
-          const output = { file: element, segment, found: segment.length, cache: false };
+          const output = {
+            file: element,
+            segment,
+            found: segment.length,
+            cache: false,
+          };
           results.push(output);
-  
+
           if (this.useCache) {
-            this.cacheHandler.store(query, output, previewLength, ignoreCase, trimContent);
+            this.cacheHandler.store(
+              query,
+              output,
+              previewLength,
+              ignoreCase,
+              trimContent,
+            );
           }
         }
       }
@@ -84,12 +106,12 @@ export class Skimming {
     options: FetchOptions = {},
   ): string[] {
     validateQuery(query);
-    
-    const { 
-      ignoreCase, 
-      previewLength, 
+
+    const {
+      ignoreCase,
+      previewLength,
       trimContent,
-      regex
+      regex,
     } = options;
     const segments = [];
 
@@ -106,7 +128,13 @@ export class Skimming {
         segments.push(segment);
         content = content.replace(segment, "");
         contentToFetch = ignoreCase ? content.toLowerCase() : content;
-        foundIndex = findFirstPos(contentToFetch, query, trimContent, regex, true);
+        foundIndex = findFirstPos(
+          contentToFetch,
+          query,
+          trimContent,
+          regex,
+          true,
+        );
 
         // prevent crashing from non-mapped instruction
         if (iterations++ > NonMappedInstruction.MAX_ITERATION) {
@@ -114,8 +142,9 @@ export class Skimming {
         }
       }
     } catch (e) {
-      if (e instanceof SyntaxError)
+      if (e instanceof SyntaxError) {
         throw new InvalidQuery(e.message);
+      }
     }
 
     return segments;
