@@ -8,6 +8,7 @@ Tag, Customize and Search with Skimming for Deno
 <div align="center">
 
 [![Master CI](https://github.com/petruki/skimming/actions/workflows/master.yml/badge.svg)](https://github.com/petruki/skimming/actions/workflows/master.yml)
+[![deno.land/x/skimming](https://shield.deno.dev/x/skimming)](https://deno.land/x/skimming)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=petruki_skimming&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=petruki_skimming)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
