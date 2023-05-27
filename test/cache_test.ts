@@ -1,5 +1,6 @@
 import { assertEquals } from "./deps.ts";
-import CacheHandle from "../src/lib/cache.ts";
+import CacheHandler from "../src/lib/cache.ts";
+import { DEFAULT_IGNORE_CASE, DEFAULT_PREVIEW_LENGTH } from "../src/skimming.ts";
 
 const { test } = Deno;
 
@@ -10,8 +11,11 @@ function sleep(ms: number) {
 test({
   name: "CACHE - Should store data into cache",
   fn(): void {
-    const cacheHandle = new CacheHandle({ size: 1, expireDuration: 10 });
-    cacheHandle.store(
+    // given
+    const cacheHandler = new CacheHandler({ size: 1, expireDuration: 10 });
+    
+    // test
+    cacheHandler.store(
       "my search",
       {
         file: "filename.md",
@@ -20,15 +24,18 @@ test({
         cache: true,
       },
     );
-    assertEquals(cacheHandle.cache.length, 1);
+    assertEquals(cacheHandler.cache.length, 1);
   },
 });
 
 test({
   name: "CACHE - Should limit cache size by 2",
   async fn(): Promise<void> {
-    const cacheHandle = new CacheHandle({ size: 2, expireDuration: 10 });
-    cacheHandle.store(
+    // given
+    const cacheHandler = new CacheHandler({ size: 2, expireDuration: 10 });
+
+    // test
+    cacheHandler.store(
       "my search",
       {
         file: "filename.md",
@@ -37,8 +44,9 @@ test({
         cache: true,
       },
     );
+
     await sleep(500);
-    cacheHandle.store(
+    cacheHandler.store(
       "another search",
       {
         file: "filename2.md",
@@ -47,10 +55,10 @@ test({
         cache: true,
       },
     );
-    assertEquals(cacheHandle.cache.length, 2);
+    assertEquals(cacheHandler.cache.length, 2);
 
     await sleep(500);
-    cacheHandle.store(
+    cacheHandler.store(
       "Is there any space",
       {
         file: "filename3.md",
@@ -59,15 +67,18 @@ test({
         cache: true,
       },
     );
-    assertEquals(cacheHandle.cache.length, 2);
+    assertEquals(cacheHandler.cache.length, 2);
   },
 });
 
 test({
   name: "CACHE - Should update exp time after accessing cached query",
   async fn(): Promise<void> {
-    const cacheHandle = new CacheHandle({ size: 2, expireDuration: 10 });
-    cacheHandle.store(
+    // given
+    const cacheHandler = new CacheHandler({ size: 2, expireDuration: 10 });
+
+    // test
+    cacheHandler.store(
       "my search",
       {
         file: "filename.md",
@@ -76,8 +87,9 @@ test({
         cache: true,
       },
     );
+
     await sleep(500);
-    cacheHandle.store(
+    cacheHandler.store(
       "another search",
       {
         file: "filename2.md",
@@ -87,19 +99,95 @@ test({
       },
     );
 
-    assertEquals(cacheHandle.cache[0].exp < cacheHandle.cache[1].exp, true);
+    assertEquals(cacheHandler.cache[0].exp < cacheHandler.cache[1].exp, true);
 
-    cacheHandle.fetch("my search");
-    assertEquals(cacheHandle.cache[0].exp < cacheHandle.cache[1].exp, false);
+    cacheHandler.fetch("my search");
+    assertEquals(cacheHandler.cache[0].exp < cacheHandler.cache[1].exp, false);
+  },
+});
+
+test({
+  name: "CACHE - Should fetch from cache when ignore case enabled",
+  fn(): void {
+    // given
+    const cacheHandler = new CacheHandler({ size: 2, expireDuration: 10 });
+
+    cacheHandler.store(
+      "My Search",
+      {
+        file: "filename.md",
+        segment: ["My Search begins somewhere here"],
+        found: 1,
+        cache: true,
+      },
+    );
+
+    // test
+    const output = cacheHandler.fetch("my search", { ignoreCase: true });
+    assertEquals(output.length, 1);
+    assertEquals(cacheHandler.cache[0].query, "my search");
+  },
+});
+
+test({
+  name: "CACHE - Should fetch from source once FetchOptions (previewLength) has changed",
+  fn(): void {
+    // given
+    const cacheHandler = new CacheHandler({ size: 2, expireDuration: 10 });
+    const previewLength = 10;
+
+    cacheHandler.store(
+      "My Search",
+      {
+        file: "filename.md",
+        segment: ["My Search begins somewhere here"],
+        found: 1,
+        cache: true,
+      },
+      previewLength
+    );
+
+    // test
+    const output = cacheHandler.fetch("My Search", { previewLength: 5 });
+    assertEquals(output.length, 0);
+  },
+});
+
+test({
+  name: "CACHE - Should fetch from source once FetchOptions (trimContent) has changed",
+  fn(): void {
+    // given
+    const cacheHandler = new CacheHandler({ size: 2, expireDuration: 10 });
+    const trimContent = true;
+
+    cacheHandler.store(
+      "My Search",
+      {
+        file: "filename.md",
+        segment: ["My Search begins somewhere here"],
+        found: 1,
+        cache: true,
+      },
+      DEFAULT_PREVIEW_LENGTH,
+      DEFAULT_IGNORE_CASE,
+      trimContent
+    );
+
+    // test
+    const output = cacheHandler.fetch("My Search", { trimContent: false });
+    assertEquals(output.length, 0);
   },
 });
 
 test({
   name:
-    "CACHE - Should reorder after one element has been accessed and then another query being added",
+    "CACHE - Should reorder after one element has been accessed and then another query has been added",
   async fn(): Promise<void> {
-    const cacheHandle = new CacheHandle({ size: 3, expireDuration: 10 });
-    cacheHandle.store(
+    // given
+    const cacheHandler = new CacheHandler({ size: 3, expireDuration: 10 });
+
+    // test
+    cacheHandler.store(
       "my search",
       {
         file: "filename.md",
@@ -109,7 +197,7 @@ test({
       },
     );
     await sleep(500);
-    cacheHandle.store(
+    cacheHandler.store(
       "another search",
       {
         file: "filename2.md",
@@ -119,17 +207,17 @@ test({
       },
     );
 
-    assertEquals(cacheHandle.cache[0].query, "my search");
-    assertEquals(cacheHandle.cache[1].query, "another search");
+    assertEquals(cacheHandler.cache[0].query, "my search");
+    assertEquals(cacheHandler.cache[1].query, "another search");
 
-    cacheHandle.fetch("my search");
+    cacheHandler.fetch("my search");
 
     // It remains the same order because fetch does not reorder
-    assertEquals(cacheHandle.cache[0].query, "my search");
-    assertEquals(cacheHandle.cache[1].query, "another search");
+    assertEquals(cacheHandler.cache[0].query, "my search");
+    assertEquals(cacheHandler.cache[1].query, "another search");
 
     await sleep(500);
-    cacheHandle.store(
+    cacheHandler.store(
       "Is there any space",
       {
         file: "filename3.md",
@@ -139,17 +227,20 @@ test({
       },
     );
 
-    assertEquals(cacheHandle.cache[0].query, "another search");
-    assertEquals(cacheHandle.cache[1].query, "my search");
-    assertEquals(cacheHandle.cache[2].query, "Is there any space");
+    assertEquals(cacheHandler.cache[0].query, "another search");
+    assertEquals(cacheHandler.cache[1].query, "my search");
+    assertEquals(cacheHandler.cache[2].query, "Is there any space");
   },
 });
 
 test({
   name: "CACHE - Should remove expired data from the cache",
   async fn(): Promise<void> {
-    const cacheHandle = new CacheHandle({ size: 10, expireDuration: 1 });
-    cacheHandle.store(
+    // given
+    const cacheHandler = new CacheHandler({ size: 10, expireDuration: 1 });
+
+    // test
+    cacheHandler.store(
       "my search",
       {
         file: "filename.md",
@@ -158,8 +249,9 @@ test({
         cache: true,
       },
     );
+
     await sleep(1000);
-    cacheHandle.store(
+    cacheHandler.store(
       "another search",
       {
         file: "filename2.md",
@@ -168,8 +260,9 @@ test({
         cache: true,
       },
     );
+    
     await sleep(500);
-    cacheHandle.store(
+    cacheHandler.store(
       "Is there any space",
       {
         file: "filename3.md",
@@ -179,8 +272,8 @@ test({
       },
     );
 
-    assertEquals(cacheHandle.cache[0].query, "another search");
-    assertEquals(cacheHandle.cache[1].query, "Is there any space");
-    assertEquals(cacheHandle.cache.length, 2);
+    assertEquals(cacheHandler.cache[0].query, "another search");
+    assertEquals(cacheHandler.cache[1].query, "Is there any space");
+    assertEquals(cacheHandler.cache.length, 2);
   },
 });
