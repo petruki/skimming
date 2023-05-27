@@ -31,9 +31,9 @@ test({
 });
 
 test({
-  name: "UTILS - Should extract segment from the first 8 pos",
+  name: "UTILS - Should extract segment from query lenght",
   fn(): void {
-    const segment = extractSegment(content, "What", 8, false);
-    assertEquals(segment, "What is")
+    const segment = extractSegment(content, "What", 0, false);
+    assertEquals(segment, "What")
   },
 });
