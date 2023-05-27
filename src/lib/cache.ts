@@ -42,10 +42,11 @@ export default class CacheHandler {
         output.segment = output.segment.filter((segment) => {
           if (ignoreCase) {
             return segment.toLowerCase().indexOf(query.toLowerCase()) >= 0;
-          } else {
-            return segment.indexOf(query) >= 0;
           }
+
+          return segment.indexOf(query) >= 0;
         });
+
         return output.segment.length;
       });
 
@@ -116,9 +117,7 @@ export default class CacheHandler {
     return this.cache.filter((storedData) => {
       if (storedData.query.length <= query.length) {
         if (ignoreCase) {
-          if (!query.toLowerCase().startsWith(storedData.query.toLowerCase())) {
-            return false;
-          }
+          return query.toLowerCase().startsWith(storedData.query.toLowerCase());
         }
 
         if (query.startsWith(storedData.query) && storedData.exp > Date.now()) {
@@ -134,7 +133,7 @@ export default class CacheHandler {
   }
 
   /**
-   * Verifies if options has been changed, if so it will gather the content from the source again
+   * Verifies if options has been changed, if so it will fetch the content from the source again
    *
    * @param storedData
    * @param FetchOptions

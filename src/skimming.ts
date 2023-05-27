@@ -57,9 +57,8 @@ export class Skimming {
     }
 
     if (!results.length) {
-      for (let i = 0; i < this.context.files.length; i++) {
-        const element = this.context.files[i];
-        const content = await this.readDocument(this.context.url, element);
+      for (const file of this.context.files) {
+        const content = await this.readDocument(this.context.url, file);
 
         const segment = this.skimContent(
           content,
@@ -74,7 +73,7 @@ export class Skimming {
 
         if (segment.length) {
           const output = {
-            file: element,
+            file,
             segment,
             found: segment.length,
             cache: false,
@@ -162,6 +161,8 @@ export class Skimming {
         });
       }
     }
+
+    result.body?.cancel();
     throw new NotContentFound(url, doc);
   }
 }

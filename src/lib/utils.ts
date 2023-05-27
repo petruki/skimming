@@ -22,7 +22,7 @@ export function validateQuery(query: string, limit?: number): void {
 }
 
 export function validateContext(context: Context): void {
-  if (!context || !context.url.length) {
+  if (!context?.url.length) {
     throw new InvalidContext(
       "context is not defined properly - use setContext() to define the context",
     );
@@ -58,19 +58,19 @@ export function extractSegment(
   let offset;
   if (previewLength === -1) {
     // Find the last line position
-    const lastPos = from.trimLeft().search(LINE_BREAK);
+    const lastPos = from.trimStart().search(LINE_BREAK);
     offset = from.substring(
       0,
       lastPos > 0 ? lastPos + 1 : from.search(LAST_LINE),
     );
   } else {
     if (trimContent) {
-      offset = from.trimLeft().substring(
+      offset = from.trimStart().substring(
         0,
-        from.trimLeft().indexOf(LINE_BREAK) + previewLength,
+        from.trimStart().indexOf(LINE_BREAK) + previewLength,
       );
     } else {
-      offset = from.trimLeft().substring(
+      offset = from.trimStart().substring(
         0,
         previewLength === 0 ? query.length : previewLength,
       );
@@ -83,9 +83,11 @@ export function extractSegment(
   /* Extract content segment from the found query to the last complete line,
    * However, if the previewLenght is shorter than the size of this line, it will display the established range.
    */
-  return (trimContent
-    ? offset.substring(0, lastLine > 0 ? lastLine : offset.length)
-    : offset).trim();
+  if (trimContent) {
+    return offset.substring(0, lastLine > 0 ? lastLine : offset.length).trim();
+  }
+
+  return offset.trim();
 }
 
 /**
@@ -116,5 +118,6 @@ export function findFirstPos(
     }
     return firstPos;
   }
+
   return foundIndex;
 }
