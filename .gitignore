@@ -1,3 +1,4 @@
-*.vscode
 dist
 .scannerwork
+coverage
+cov_profile.lcov

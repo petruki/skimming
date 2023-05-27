@@ -155,7 +155,7 @@ export class Skimming {
    */
   private async readDocument(url: string, doc: string): Promise<string> {
     const result = await fetch(`${url}${doc}`);
-    if (result != null && result.body != null) {
+    if (result?.body != null) {
       if (result.status === 200) {
         return await result.text().then((data: string) => {
           return data;

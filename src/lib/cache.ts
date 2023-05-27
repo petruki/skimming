@@ -27,24 +27,12 @@ export default class CacheHandler {
   ): Output[] {
     const { ignoreCase, previewLength, trimContent } = options;
 
-    const result = this.cache.filter((storedData) => {
-      if (storedData.query.length <= query.length) {
-        if (ignoreCase) {
-          if (!query.toLowerCase().startsWith(storedData.query.toLowerCase())) {
-            return false;
-          }
-        }
-
-        if (query.startsWith(storedData.query) && storedData.exp > Date.now()) {
-          return !this.checkOptions(storedData, {
-            previewLength,
-            ignoreCase,
-            trimContent,
-          });
-        }
-      }
-      return false;
-    });
+    const result = this.fetchCache(
+      query,
+      ignoreCase,
+      previewLength,
+      trimContent,
+    );
 
     if (result.length) {
       const cachedResult = result[0];
@@ -68,6 +56,9 @@ export default class CacheHandler {
     return [];
   }
 
+  /**
+   * Stores result in memory
+   */
   store(
     query: string,
     output: Output,
@@ -105,6 +96,41 @@ export default class CacheHandler {
         this.cache.push(toBeCached);
       }
     }
+  }
+
+  /**
+   * Fetches cache based on query input and options provided
+   *
+   * @param query
+   * @param ignoreCase
+   * @param previewLength
+   * @param trimContent
+   * @returns
+   */
+  private fetchCache(
+    query: string,
+    ignoreCase: boolean | undefined,
+    previewLength: number | undefined,
+    trimContent: boolean | undefined,
+  ) {
+    return this.cache.filter((storedData) => {
+      if (storedData.query.length <= query.length) {
+        if (ignoreCase) {
+          if (!query.toLowerCase().startsWith(storedData.query.toLowerCase())) {
+            return false;
+          }
+        }
+
+        if (query.startsWith(storedData.query) && storedData.exp > Date.now()) {
+          return !this.checkOptions(storedData, {
+            previewLength,
+            ignoreCase,
+            trimContent,
+          });
+        }
+      }
+      return false;
+    });
   }
 
   /**
