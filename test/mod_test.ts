@@ -2,7 +2,7 @@ import {
   assertEquals,
   assertNotEquals,
   assertThrows,
-} from "https://deno.land/std@0.142.0/testing/asserts.ts";
+} from "https://deno.land/std@0.188.0/testing/asserts.ts";
 import { Context, Skimming } from "../mod.ts";
 import { InvalidContext } from "../src/lib/exceptions.ts";
 

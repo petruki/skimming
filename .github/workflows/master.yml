@@ -18,10 +18,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Deno v1.22.1
+      - name: Setup Deno v1.33.4
         uses: denoland/setup-deno@v1
         with:
-          deno-version: v1.22.1
+          deno-version: v1.33.4
 
       - name: Verify formatting
         run: deno fmt mod.ts src/ --check
@@ -30,7 +30,10 @@ jobs:
         run: deno lint
 
       - name: Run tests
-        run: deno test -A --unstable
+        run: deno test -A --unstable --coverage=cov_profile
+
+      - name: Generate coverage reports
+        run: deno coverage cov_profile --lcov > cov_profile.lcov
 
       - name: SonarCloud Scan
         uses: sonarsource/sonarcloud-github-action@master
