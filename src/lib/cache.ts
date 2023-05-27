@@ -100,12 +100,12 @@ export default class CacheHandler {
 
   /**
    * Fetches cache based on query input and options provided
-   * 
-   * @param query 
-   * @param ignoreCase 
-   * @param previewLength 
-   * @param trimContent 
-   * @returns 
+   *
+   * @param query
+   * @param ignoreCase
+   * @param previewLength
+   * @param trimContent
+   * @returns
    */
   private fetchCache(
     query: string,
