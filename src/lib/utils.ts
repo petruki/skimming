@@ -1,19 +1,14 @@
-import { Context } from "./types.ts";
-import { InvalidContext, InvalidQuery } from "./exceptions.ts";
-import {
-  DEFAULT_NEXT,
-  DEFAULT_PREVIEW_LENGTH,
-  DEFAULT_REGEX,
-  DEFAULT_TRIM,
-} from "../skimming.ts";
+import { Context } from './types.ts';
+import { InvalidContext, InvalidQuery } from './exceptions.ts';
+import { DEFAULT_NEXT, DEFAULT_PREVIEW_LENGTH, DEFAULT_REGEX, DEFAULT_TRIM } from '../skimming.ts';
 
-export const LINE_BREAK = "\n";
-export const LAST_LINE = "$";
+export const LINE_BREAK = '\n';
+export const LAST_LINE = '$';
 export const REGEX_ESCAPE = /[.*+?^${}()|[\]\\]/g;
 
 export function validateQuery(query: string, limit?: number): void {
   if (!query.length) {
-    throw new InvalidQuery("it is empty");
+    throw new InvalidQuery('it is empty');
   }
 
   if (limit && query.length > limit) {
@@ -24,19 +19,13 @@ export function validateQuery(query: string, limit?: number): void {
 export function validateContext(context: Context): void {
   if (!context?.url.length) {
     throw new InvalidContext(
-      "context is not defined properly - use setContext() to define the context",
+      'context is not defined properly - use setContext() to define the context',
     );
   }
 
   context.files.forEach((file) => {
     if (!file.length) {
-      throw new InvalidContext("file name is empty");
-    } else {
-      if (!context.url.endsWith("/") && !file.startsWith("/")) {
-        throw new InvalidContext(
-          `this enpoint might not work: ${context.url}${file}`,
-        );
-      }
+      throw new InvalidContext('file name is empty');
     }
   });
 }
@@ -63,18 +52,16 @@ export function extractSegment(
       0,
       lastPos > 0 ? lastPos + 1 : from.search(LAST_LINE),
     );
+  } else if (trimContent) {
+    offset = from.trimStart().substring(
+      0,
+      from.trimStart().indexOf(LINE_BREAK) + previewLength,
+    );
   } else {
-    if (trimContent) {
-      offset = from.trimStart().substring(
-        0,
-        from.trimStart().indexOf(LINE_BREAK) + previewLength,
-      );
-    } else {
-      offset = from.trimStart().substring(
-        0,
-        previewLength === 0 ? query.length : previewLength,
-      );
-    }
+    offset = from.trimStart().substring(
+      0,
+      previewLength === 0 ? query.length : previewLength,
+    );
   }
 
   // Find the last line position in a multiline content
@@ -104,14 +91,12 @@ export function findFirstPos(
   regex: boolean = DEFAULT_REGEX,
   next: boolean = DEFAULT_NEXT,
 ): number {
-  const foundIndex = regex
-    ? contentToFetch.search(query)
-    : contentToFetch.search(query.replace(REGEX_ESCAPE, "\\$&"));
+  const foundIndex = regex ? contentToFetch.search(query) : contentToFetch.search(query.replace(REGEX_ESCAPE, '\\$&'));
 
   if (trimContent && foundIndex != -1) {
     let firstPos = next ? foundIndex : 0;
     for (let index = foundIndex; index >= 0; index--) {
-      if (contentToFetch.charAt(index) == "\n") {
+      if (contentToFetch.charAt(index) == '\n') {
         firstPos = index;
         break;
       }

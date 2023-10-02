@@ -1,4 +1,4 @@
-import { FetchOptions } from "./types.ts";
+import { FetchOptions } from './types.ts';
 
 export class InvalidQuery extends Error {
   constructor(cause: string) {
@@ -26,7 +26,7 @@ export class NonMappedInstruction extends Error {
 
   constructor(query: string, options: FetchOptions) {
     super(
-      `Request exit to prevent crashing - query: ${query} - options: ${options}`,
+      `Request exit to prevent crashing - query: ${query} - options: ${String(options)}`,
     );
     this.name = this.constructor.name;
   }

@@ -1,10 +1,6 @@
-import {
-  assertEquals,
-  assertNotEquals,
-  assertThrows,
-} from "./deps.ts";
-import { Context, Skimming } from "../mod.ts";
-import { InvalidContext } from "../src/lib/exceptions.ts";
+import { assertEquals, assertNotEquals, assertThrows } from './deps.ts';
+import { Context, Skimming } from '../mod.ts';
+import { InvalidContext } from '../src/lib/exceptions.ts';
 
 const { test } = Deno;
 
@@ -19,14 +15,13 @@ const content = `
   It is a long established fact that a reader will be distracted by the readable content of a page when looking at its layout.`;
 
 test({
-  name: "MOD - Should return one valid entry",
+  name: 'MOD - Should return one valid entry',
   async fn(): Promise<void> {
     // given
-    const query = "Skimming";
-    const files = ["README.md"];
+    const query = 'Skimming';
+    const files = ['README.md'];
     const context: Context = {
-      url:
-        "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
+      url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
       files,
     };
 
@@ -40,14 +35,13 @@ test({
 });
 
 test({
-  name: "MOD - Should NOT return - Exception: document not found",
+  name: 'MOD - Should NOT return - Exception: document not found',
   async fn(): Promise<void> {
     // given
-    const query = "query";
-    const files = ["NOT_EXIST.md"];
+    const query = 'query';
+    const files = ['NOT_EXIST.md'];
     const context: Context = {
-      url:
-        "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
+      url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
       files,
     };
 
@@ -56,7 +50,7 @@ test({
 
     // test
     await skimmer.skim(query).catch((error) => {
-      assertEquals(error.name, "NotContentFound");
+      assertEquals(error.name, 'NotContentFound');
       assertEquals(
         error.message,
         `No content found at https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/${files[0]}.`,
@@ -66,14 +60,13 @@ test({
 });
 
 test({
-  name: "MOD - Should NOT return - Exception: empty query",
+  name: 'MOD - Should NOT return - Exception: empty query',
   fn(): void {
     // given
-    const query = "";
-    const files = ["README.md"];
+    const query = '';
+    const files = ['README.md'];
     const context: Context = {
-      url:
-        "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
+      url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
       files,
     };
 
@@ -82,20 +75,20 @@ test({
 
     // test
     skimmer.skim(query).catch((error) => {
-      assertEquals(error.name, "InvalidQuery");
+      assertEquals(error.name, 'InvalidQuery');
       assertEquals(
         error.message,
-        `Invalid query input. Cause: ${"it is empty"}.`,
+        `Invalid query input. Cause: ${'it is empty'}.`,
       );
     });
   },
 });
 
 test({
-  name: "MOD - Should return content found not trimmed",
+  name: 'MOD - Should return content found not trimmed',
   fn(): void {
     // given
-    const query = "Lorem";
+    const query = 'Lorem';
     const skimmer = new Skimming();
 
     // test
@@ -108,10 +101,10 @@ test({
 });
 
 test({
-  name: "MOD - Should return content found trimmed",
+  name: 'MOD - Should return content found trimmed',
   fn(): void {
     // given
-    const query = "Lorem";
+    const query = 'Lorem';
     const skimmer = new Skimming();
 
     // test
@@ -121,10 +114,10 @@ test({
 });
 
 test({
-  name: "MOD - Should return two results - not ignore case",
+  name: 'MOD - Should return two results - not ignore case',
   fn(): void {
     // given
-    const query = "Lorem";
+    const query = 'Lorem';
     const skimmer = new Skimming();
 
     // test
@@ -134,10 +127,10 @@ test({
 });
 
 test({
-  name: "MOD - Should return three results - ignore case",
+  name: 'MOD - Should return three results - ignore case',
   fn(): void {
     // given
-    const query = "Lorem";
+    const query = 'Lorem';
     const skimmer = new Skimming();
 
     // test
@@ -150,12 +143,12 @@ test({
 });
 
 test({
-  name: "MOD - Should NOT return - Exception: url is empty",
+  name: 'MOD - Should NOT return - Exception: url is empty',
   fn(): void {
     // given
-    const files = ["README.md"];
+    const files = ['README.md'];
     const context: Context = {
-      url: "",
+      url: '',
       files,
     };
 
@@ -165,19 +158,18 @@ test({
     assertThrows(
       () => skimmer.setContext(context),
       InvalidContext,
-      `Invalid context. Cause: ${"context is not defined properly - use setContext() to define the context"}.`,
+      `Invalid context. Cause: ${'context is not defined properly - use setContext() to define the context'}.`,
     );
   },
 });
 
 test({
-  name: "MOD - Should NOT return - Exception: file name is empty",
+  name: 'MOD - Should NOT return - Exception: file name is empty',
   fn(): void {
     // given
-    const files = [""];
+    const files = [''];
     const context: Context = {
-      url:
-        "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
+      url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
       files,
     };
 
@@ -187,41 +179,19 @@ test({
     assertThrows(
       () => skimmer.setContext(context),
       InvalidContext,
-      `Invalid context. Cause: ${"file name is empty"}.`,
+      `Invalid context. Cause: ${'file name is empty'}.`,
     );
   },
 });
 
 test({
-  name: "MOD - Should NOT return - Exception: endpoint might not work",
-  fn(): void {
-    // given
-    const files = ["README.md"];
-    const context: Context = {
-      url: "https://raw.githubusercontent.com/petruki/skimming/master", // Here, it is missing a slash in the end
-      files,
-    };
-
-    const skimmer = new Skimming();
-
-    // test
-    assertThrows(
-      () => skimmer.setContext(context),
-      InvalidContext,
-      `Invalid context. Cause: this enpoint might not work: ${context.url}${"README.md"}.`,
-    );
-  },
-});
-
-test({
-  name: "MOD - Should return value from the cache",
+  name: 'MOD - Should return value from the cache',
   async fn(): Promise<void> {
     // given
-    const query = "Skimming";
-    const files = ["README.md"];
+    const query = 'Skimming';
+    const files = ['README.md'];
     const context: Context = {
-      url:
-        "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
+      url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
       files,
     };
 
@@ -244,14 +214,13 @@ test({
 });
 
 test({
-  name: "MOD - Should return value from the cache with new preview length",
+  name: 'MOD - Should return value from the cache with new preview length',
   async fn(): Promise<void> {
     // given
-    const query = "Skimming({";
-    const files = ["README.md"];
+    const query = 'Skimming({';
+    const files = ['README.md'];
     const context: Context = {
-      url:
-        "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
+      url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
       files,
     };
 
@@ -278,15 +247,14 @@ test({
 });
 
 test({
-  name: "MOD - Should return value from the cache with ignore case",
+  name: 'MOD - Should return value from the cache with ignore case',
   async fn(): Promise<void> {
     // given
-    const query1 = "Skimming";
-    const query2 = "skimming";
-    const files = ["README.md"];
+    const query1 = 'Skimming';
+    const query2 = 'skimming';
+    const files = ['README.md'];
     const context: Context = {
-      url:
-        "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
+      url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
       files,
     };
 
@@ -305,7 +273,7 @@ test({
     output = await skimmer.skim(query2, {
       previewLength: 20,
       trimContent: false,
-      ignoreCase: true
+      ignoreCase: true,
     });
 
     assertEquals(output.length, 1);
@@ -314,15 +282,13 @@ test({
 });
 
 test({
-  name:
-    "MOD - Should return value from the source with new preview length",
+  name: 'MOD - Should return value from the source with new preview length',
   async fn(): Promise<void> {
     // given
-    const query = "Skimming({";
-    const files = ["README.md"];
+    const query = 'Skimming({';
+    const files = ['README.md'];
     const context: Context = {
-      url:
-        "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
+      url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
       files,
     };
 
@@ -356,14 +322,13 @@ test({
 });
 
 test({
-  name: "MOD - Should return value using regular expression",
+  name: 'MOD - Should return value using regular expression',
   async fn(): Promise<void> {
     // given
-    const query = "#{3}";
-    const files = ["README.md"];
+    const query = '#{3}';
+    const files = ['README.md'];
     const context: Context = {
-      url:
-        "https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/",
+      url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
       files,
     };
 
@@ -377,8 +342,8 @@ test({
     });
 
     assertEquals(output.length, 1);
-    assertEquals(output[0].segment[0], "### No cache");
-    assertEquals(output[0].segment[1], "### Using cache");
-    assertEquals(output[0].segment[2], "### Testing");
+    assertEquals(output[0].segment[0], '### No cache');
+    assertEquals(output[0].segment[1], '### Using cache');
+    assertEquals(output[0].segment[2], '### Testing');
   },
 });
