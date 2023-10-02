@@ -75,9 +75,11 @@ export class Skimming {
             this.cacheHandler.store(
               query,
               output,
-              previewLength,
-              ignoreCase,
-              trimContent,
+              {
+                previewLength,
+                ignoreCase,
+                trimContent,
+              },
             );
           }
         }

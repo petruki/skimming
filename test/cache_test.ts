@@ -120,12 +120,44 @@ test({
         found: 1,
         cache: true,
       },
+      {
+        ignoreCase: true,
+      },
     );
 
     // test
     const output = cacheHandler.fetch('my search', { ignoreCase: true });
     assertEquals(output.length, 1);
     assertEquals(cacheHandler.cache[0].query, 'my search');
+  },
+});
+
+test({
+  name: 'CACHE - Should fetch from remote when ignore case enabled',
+  async fn(): Promise<void> {
+    // given
+    const cacheHandler = new CacheHandler({ size: 2, expireDuration: 1 });
+
+    cacheHandler.store(
+      'My Search',
+      {
+        file: 'filename.md',
+        segment: ['My Search begins somewhere here'],
+        found: 1,
+        cache: true,
+      },
+      {
+        ignoreCase: true,
+      },
+    );
+
+    // test
+    let output = cacheHandler.fetch('my search', { ignoreCase: true });
+    assertEquals(output.length, 1);
+    await sleep(1500);
+
+    output = cacheHandler.fetch('my search', { ignoreCase: true });
+    assertEquals(output.length, 0);
   },
 });
 
@@ -144,7 +176,9 @@ test({
         found: 1,
         cache: true,
       },
-      previewLength,
+      {
+        previewLength,
+      },
     );
 
     // test
@@ -168,9 +202,11 @@ test({
         found: 1,
         cache: true,
       },
-      DEFAULT_PREVIEW_LENGTH,
-      DEFAULT_IGNORE_CASE,
-      trimContent,
+      {
+        trimContent,
+        previewLength: DEFAULT_PREVIEW_LENGTH,
+        ignoreCase: DEFAULT_IGNORE_CASE,
+      },
     );
 
     // test
