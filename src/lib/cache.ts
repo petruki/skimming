@@ -1,9 +1,5 @@
-import { Cache, CacheOptions, FetchOptions, Output } from "./types.ts";
-import {
-  DEFAULT_IGNORE_CASE,
-  DEFAULT_PREVIEW_LENGTH,
-  DEFAULT_TRIM,
-} from "../skimming.ts";
+import { Cache, CacheOptions, FetchOptions, Output } from './types.ts';
+import { DEFAULT_IGNORE_CASE, DEFAULT_PREVIEW_LENGTH, DEFAULT_TRIM } from '../skimming.ts';
 
 const DEFAULT_CACHE_SIZE = 60;
 const DEFAULT_CACHE_DURATION = 60; // 1 min
@@ -70,9 +66,7 @@ export default class CacheHandler {
     const cachedData = this.cache.filter((cache) => cache.query === query);
 
     if (cachedData.length) {
-      cachedData[0].output = cachedData[0].output.filter((cachedOutput) =>
-        cachedOutput.file != output.file
-      );
+      cachedData[0].output = cachedData[0].output.filter((cachedOutput) => cachedOutput.file != output.file);
       cachedData[0].output.push(output);
       cachedData[0].exp = Date.now() + (1000 * this.cacheExpireDuration);
       cachedData[0].previewLength = previewLength;
@@ -142,12 +136,9 @@ export default class CacheHandler {
     storedData: Cache,
     { previewLength, ignoreCase, trimContent }: FetchOptions,
   ): boolean {
-    return storedData.previewLength !=
-        (previewLength != undefined ? previewLength : DEFAULT_PREVIEW_LENGTH) ||
-      storedData.ignoreCase !=
-        (ignoreCase != undefined ? ignoreCase : DEFAULT_IGNORE_CASE) ||
-      storedData.trimContent !=
-        (trimContent != undefined ? trimContent : DEFAULT_TRIM);
+    return storedData.previewLength !== (previewLength ?? DEFAULT_PREVIEW_LENGTH) ||
+      storedData.ignoreCase !== (ignoreCase ?? DEFAULT_IGNORE_CASE) ||
+      storedData.trimContent !== (trimContent ?? DEFAULT_TRIM);
   }
 
   /**
@@ -156,8 +147,6 @@ export default class CacheHandler {
   private updateCache(): void {
     this.cache = this.cache.filter((storedData) => storedData.exp > Date.now());
 
-    this.cache = this.cache.sort((cachea: Cache, cacheb: Cache) =>
-      cachea.exp > cacheb.exp ? 1 : -1
-    );
+    this.cache.sort((cachea: Cache, cacheb: Cache) => cachea.exp > cacheb.exp ? 1 : -1);
   }
 }

@@ -1,16 +1,7 @@
-import { CacheOptions, Context, FetchOptions, Output } from "./lib/types.ts";
-import {
-  extractSegment,
-  findFirstPos,
-  validateContext,
-  validateQuery,
-} from "./lib/utils.ts";
-import {
-  InvalidQuery,
-  NonMappedInstruction,
-  NotContentFound,
-} from "./lib/exceptions.ts";
-import CacheHandler from "./lib/cache.ts";
+import { CacheOptions, Context, FetchOptions, Output } from './lib/types.ts';
+import { extractSegment, findFirstPos, validateContext, validateQuery } from './lib/utils.ts';
+import { InvalidQuery, NonMappedInstruction, NotContentFound } from './lib/exceptions.ts';
+import CacheHandler from './lib/cache.ts';
 
 export const DEFAULT_PREVIEW_LENGTH = 200;
 export const DEFAULT_TRIM = true;
@@ -125,7 +116,7 @@ export class Skimming {
         const from = content.substring(foundIndex);
         const segment = extractSegment(from, query, previewLength, trimContent);
         segments.push(segment);
-        content = content.replace(segment, "");
+        content = content.replace(segment, '');
         contentToFetch = ignoreCase ? content.toLowerCase() : content;
         foundIndex = findFirstPos(
           contentToFetch,
