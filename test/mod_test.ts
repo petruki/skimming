@@ -185,27 +185,6 @@ test({
 });
 
 test({
-  name: 'MOD - Should NOT return - Exception: endpoint might not work',
-  fn(): void {
-    // given
-    const files = ['README.md'];
-    const context: Context = {
-      url: 'https://raw.githubusercontent.com/petruki/skimming/master', // Here, it is missing a slash in the end
-      files,
-    };
-
-    const skimmer = new Skimming();
-
-    // test
-    assertThrows(
-      () => skimmer.setContext(context),
-      InvalidContext,
-      `Invalid context. Cause: this enpoint might not work: ${context.url}${'README.md'}.`,
-    );
-  },
-});
-
-test({
   name: 'MOD - Should return value from the cache',
   async fn(): Promise<void> {
     // given

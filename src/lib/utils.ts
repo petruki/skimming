@@ -26,10 +26,6 @@ export function validateContext(context: Context): void {
   context.files.forEach((file) => {
     if (!file.length) {
       throw new InvalidContext('file name is empty');
-    } else if (!context.url.endsWith('/') && !file.startsWith('/')) {
-      throw new InvalidContext(
-        `this enpoint might not work: ${context.url}${file}`,
-      );
     }
   });
 }

@@ -144,7 +144,7 @@ export class Skimming {
    * Fetch document online located at the provided url
    */
   private async readDocument(url: string, doc: string): Promise<string> {
-    const result = await fetch(`${url}${doc}`);
+    const result = await fetch(`${url}/${doc}`);
     if (result?.body != null) {
       if (result.status === 200) {
         return await result.text().then((data: string) => {
