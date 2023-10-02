@@ -25,9 +25,11 @@ export default class CacheHandler {
 
     const result = this.fetchCache(
       query,
-      ignoreCase,
-      previewLength,
-      trimContent,
+      {
+        ignoreCase,
+        previewLength,
+        trimContent,
+      },
     );
 
     if (result.length) {
@@ -59,9 +61,7 @@ export default class CacheHandler {
   store(
     query: string,
     output: Output,
-    previewLength: number = DEFAULT_PREVIEW_LENGTH,
-    ignoreCase: boolean = DEFAULT_IGNORE_CASE,
-    trimContent: boolean = DEFAULT_TRIM,
+    fetchOptions?: FetchOptions,
   ): void {
     const cachedData = this.cache.filter((cache) => cache.query === query);
 
@@ -69,16 +69,16 @@ export default class CacheHandler {
       cachedData[0].output = cachedData[0].output.filter((cachedOutput) => cachedOutput.file != output.file);
       cachedData[0].output.push(output);
       cachedData[0].exp = Date.now() + (1000 * this.cacheExpireDuration);
-      cachedData[0].previewLength = previewLength;
-      cachedData[0].trimContent = trimContent;
-      cachedData[0].ignoreCase = ignoreCase;
+      cachedData[0].previewLength = fetchOptions?.previewLength ?? DEFAULT_PREVIEW_LENGTH;
+      cachedData[0].trimContent = fetchOptions?.trimContent ?? DEFAULT_TRIM;
+      cachedData[0].ignoreCase = fetchOptions?.ignoreCase ?? DEFAULT_IGNORE_CASE;
     } else {
       const toBeCached = {
         query,
         output: [output],
-        previewLength,
-        ignoreCase,
-        trimContent,
+        previewLength: fetchOptions?.previewLength ?? DEFAULT_PREVIEW_LENGTH,
+        ignoreCase: fetchOptions?.ignoreCase ?? DEFAULT_IGNORE_CASE,
+        trimContent: fetchOptions?.trimContent ?? DEFAULT_TRIM,
         exp: Date.now() + (1000 * this.cacheExpireDuration),
       };
 
@@ -97,29 +97,29 @@ export default class CacheHandler {
    * Fetches cache based on query input and options provided
    *
    * @param query
-   * @param ignoreCase
-   * @param previewLength
-   * @param trimContent
+   * @param fetchOptions
    * @returns
    */
   private fetchCache(
     query: string,
-    ignoreCase: boolean | undefined,
-    previewLength: number | undefined,
-    trimContent: boolean | undefined,
-  ) {
+    fetchOptions: FetchOptions,
+  ): Cache[] {
+    const { ignoreCase, previewLength, trimContent } = fetchOptions;
+
     return this.cache.filter((storedData) => {
-      if (storedData.query.length <= query.length) {
+      if (storedData.query.length <= query.length && storedData.exp > Date.now()) {
+        const hasOptionsChanged = this.checkOptions(storedData, {
+          previewLength,
+          ignoreCase,
+          trimContent,
+        });
+
         if (ignoreCase) {
-          return query.toLowerCase().startsWith(storedData.query.toLowerCase());
+          return query.toLowerCase().startsWith(storedData.query.toLowerCase()) && !hasOptionsChanged;
         }
 
-        if (query.startsWith(storedData.query) && storedData.exp > Date.now()) {
-          return !this.checkOptions(storedData, {
-            previewLength,
-            ignoreCase,
-            trimContent,
-          });
+        if (query.startsWith(storedData.query)) {
+          return !hasOptionsChanged;
         }
       }
       return false;
