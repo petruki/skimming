@@ -21,7 +21,7 @@ jobs:
       - name: Setup Deno v1.37.0
         uses: denoland/setup-deno@v1
         with:
-          deno-version: vv1.37.0
+          deno-version: v1.37.0
 
       - name: Setup LCOV        
         run: sudo apt install -y lcov
