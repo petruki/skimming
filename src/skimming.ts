@@ -1,4 +1,4 @@
-import { CacheOptions, Context, FetchOptions, Output } from './lib/types.ts';
+import type { CacheOptions, Context, FetchOptions, Output } from './lib/types.ts';
 import { extractSegment, findFirstPos, validateContext, validateQuery } from './lib/utils.ts';
 import { InvalidQuery, NonMappedInstruction, NotContentFound } from './lib/exceptions.ts';
 import CacheHandler from './lib/cache.ts';
