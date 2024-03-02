@@ -1,4 +1,4 @@
-import { Cache, CacheOptions, FetchOptions, Output } from './types.ts';
+import type { Cache, CacheOptions, FetchOptions, Output } from './types.ts';
 import { DEFAULT_IGNORE_CASE, DEFAULT_PREVIEW_LENGTH, DEFAULT_TRIM } from '../skimming.ts';
 
 const DEFAULT_CACHE_SIZE = 60;

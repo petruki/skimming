@@ -1,4 +1,4 @@
-import { Context } from './types.ts';
+import type { Context } from './types.ts';
 import { InvalidContext, InvalidQuery } from './exceptions.ts';
 import { DEFAULT_NEXT, DEFAULT_PREVIEW_LENGTH, DEFAULT_REGEX, DEFAULT_TRIM } from '../skimming.ts';
 

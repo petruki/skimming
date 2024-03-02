@@ -1,4 +1,4 @@
-import { FetchOptions } from './types.ts';
+import type { FetchOptions } from './types.ts';
 
 export class InvalidQuery extends Error {
   constructor(cause: string) {
@@ -22,7 +22,7 @@ export class NotContentFound extends Error {
 }
 
 export class NonMappedInstruction extends Error {
-  static MAX_ITERATION = 1000;
+  static readonly MAX_ITERATION = 1000;
 
   constructor(query: string, options: FetchOptions) {
     super(
