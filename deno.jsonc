@@ -10,7 +10,7 @@
     "cover": "deno task clean && deno task test && deno task lcov && genhtml -o coverage/html coverage/report.lcov",
     "clean": "rm -rf ./npm ./coverage",
     "cache-reload": "deno cache --reload --lock=deno.lock --lock-write mod.ts test/deps.ts",
-    "play": "deno run -A example/app.ts"
+    "play": "deno run -A test/playground/index.ts"
   },
   "exports": "./mod.ts",
   "fmt": {
