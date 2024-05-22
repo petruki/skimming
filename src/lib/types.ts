@@ -1,8 +1,18 @@
+/**
+ * @param url URL of the file
+ * @param files List of files to be skimmed
+ */
 export type Context = {
   url: string;
   files: string[];
 };
 
+/**
+ * @param file Name of the file
+ * @param segment List of segments found
+ * @param found Number of segments found
+ * @param cache If the result was cached
+ */
 export type Output = {
   file: string;
   segment: string[];
@@ -10,6 +20,14 @@ export type Output = {
   cache: boolean;
 };
 
+/**
+ * @param query Query to be searched
+ * @param output List of segments found
+ * @param previewLength Length of the segment to be shown
+ * @param ignoreCase Ignore case when searching
+ * @param trimContent Trim content to remove incomplete lines
+ * @param exp Expiration time of the cache
+ */
 export type Cache = {
   query: string;
   output: Output[];

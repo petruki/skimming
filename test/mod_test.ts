@@ -1,5 +1,5 @@
 import { assertEquals, assertNotEquals, assertThrows } from './deps.ts';
-import { Context, Skimming } from '../mod.ts';
+import { type Context, Skimming } from '../mod.ts';
 import { InvalidContext } from '../src/lib/exceptions.ts';
 
 const { test } = Deno;
@@ -25,8 +25,7 @@ test({
       files,
     };
 
-    const skimmer = new Skimming();
-    skimmer.setContext(context);
+    const skimmer = Skimming.create(context);
 
     // test
     const entries = await skimmer.skim(query, { previewLength: 200 });
@@ -45,8 +44,7 @@ test({
       files,
     };
 
-    const skimmer = new Skimming();
-    skimmer.setContext(context);
+    const skimmer = Skimming.create(context);
 
     // test
     await skimmer.skim(query).catch((error) => {
@@ -70,8 +68,7 @@ test({
       files,
     };
 
-    const skimmer = new Skimming();
-    skimmer.setContext(context);
+    const skimmer = Skimming.create(context);
 
     // test
     skimmer.skim(query).catch((error) => {
@@ -89,7 +86,7 @@ test({
   fn(): void {
     // given
     const query = 'Lorem';
-    const skimmer = new Skimming();
+    const skimmer = Skimming.create();
 
     // test
     const results = skimmer.skimContent(content, query, {
@@ -105,7 +102,7 @@ test({
   fn(): void {
     // given
     const query = 'Lorem';
-    const skimmer = new Skimming();
+    const skimmer = Skimming.create();
 
     // test
     const results = skimmer.skimContent(content, query, { previewLength: 100 });
@@ -118,7 +115,7 @@ test({
   fn(): void {
     // given
     const query = 'Lorem';
-    const skimmer = new Skimming();
+    const skimmer = Skimming.create();
 
     // test
     const results = skimmer.skimContent(content, query, { previewLength: 20 });
@@ -131,7 +128,7 @@ test({
   fn(): void {
     // given
     const query = 'Lorem';
-    const skimmer = new Skimming();
+    const skimmer = Skimming.create();
 
     // test
     const results = skimmer.skimContent(content, query, {
@@ -152,11 +149,9 @@ test({
       files,
     };
 
-    const skimmer = new Skimming();
-
     // test
     assertThrows(
-      () => skimmer.setContext(context),
+      () => Skimming.create(context),
       InvalidContext,
       `Invalid context. Cause: ${'context is not defined properly - use setContext() to define the context'}.`,
     );
@@ -173,11 +168,9 @@ test({
       files,
     };
 
-    const skimmer = new Skimming();
-
     // test
     assertThrows(
-      () => skimmer.setContext(context),
+      () => Skimming.create(context),
       InvalidContext,
       `Invalid context. Cause: ${'file name is empty'}.`,
     );
@@ -195,8 +188,7 @@ test({
       files,
     };
 
-    const skimmer = new Skimming({ expireDuration: 10, size: 10 });
-    skimmer.setContext(context);
+    const skimmer = Skimming.create(context, { expireDuration: 10, size: 10 });
 
     // test
     let output = await skimmer.skim(query);
@@ -224,8 +216,7 @@ test({
       files,
     };
 
-    const skimmer = new Skimming({ expireDuration: 10, size: 10 });
-    skimmer.setContext(context);
+    const skimmer = Skimming.create(context, { expireDuration: 10, size: 10 });
 
     // test
     let output = await skimmer.skim(query, {
@@ -258,8 +249,7 @@ test({
       files,
     };
 
-    const skimmer = new Skimming({ expireDuration: 10, size: 10 });
-    skimmer.setContext(context);
+    const skimmer = Skimming.create(context, { expireDuration: 10, size: 10 });
 
     // test
     let output = await skimmer.skim(query1, {
@@ -292,8 +282,7 @@ test({
       files,
     };
 
-    const skimmer = new Skimming({ expireDuration: 10, size: 10 });
-    skimmer.setContext(context);
+    const skimmer = Skimming.create(context, { expireDuration: 10, size: 10 });
 
     // test
     let output = await skimmer.skim(query, {
@@ -332,8 +321,7 @@ test({
       files,
     };
 
-    const skimmer = new Skimming();
-    skimmer.setContext(context);
+    const skimmer = Skimming.create(context, { expireDuration: 10, size: 10 });
 
     // test
     const output = await skimmer.skim(query, {
