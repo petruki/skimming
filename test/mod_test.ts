@@ -209,7 +209,7 @@ test({
   name: 'MOD - Should return value from the cache with new preview length',
   async fn(): Promise<void> {
     // given
-    const query = 'Skimming({';
+    const query = 'Skimming';
     const files = ['README.md'];
     const context: Context = {
       url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
@@ -275,7 +275,7 @@ test({
   name: 'MOD - Should return value from the source with new preview length',
   async fn(): Promise<void> {
     // given
-    const query = 'Skimming({';
+    const query = 'Skimming';
     const files = ['README.md'];
     const context: Context = {
       url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
