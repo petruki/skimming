@@ -1,1 +1,1 @@
-export { assertEquals, assertNotEquals, assertThrows } from 'https://deno.land/std@0.218.2/assert/mod.ts';
+export { assertEquals, assertNotEquals, assertThrows } from 'https://deno.land/std@0.224.0/assert/mod.ts';

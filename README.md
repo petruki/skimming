@@ -8,15 +8,14 @@ Tag, Customize and Search with Skimming for Deno
 <div align="center">
 
 [![Master CI](https://github.com/petruki/skimming/actions/workflows/master.yml/badge.svg)](https://github.com/petruki/skimming/actions/workflows/master.yml)
-[![deno.land/x/skimming](https://shield.deno.dev/x/skimming)](https://deno.land/x/skimming)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=petruki_skimming&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=petruki_skimming)
+[![deno.land/x/skimming](https://shield.deno.dev/x/skimming)](https://deno.land/x/skimming)
+[![JSR](https://jsr.io/badges/@trackerforce/skimming)](https://jsr.io/@trackerforce/skimming)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 </div>
 
 ***
-
-# `skimming` - Deno Module
 
 Skimming is a content fetcher for Deno. The idea is to provide a simple and
 efficient and customizable way to fetch content from the web.
@@ -33,18 +32,15 @@ efficient and customizable way to fetch content from the web.
 ### No cache
 
 ```js
-import { Skimming } from "https://deno.land/x/skimming/mod.ts";
+import { Skimming } from "@trackerforce/skimming@[VERSION]"; // or
+import { Skimming } from 'https://deno.land/x/skimming@v[VERSION]/mod.ts';
 
-const files = ["README.md"];
-const context = {
+const skimmer = Skimming.create({
   url: "https://raw.githubusercontent.com/petruki/skimming/master/",
-  files,
-};
-const query = "Usage";
+  files: ["README.md"],
+});
 
-const skimmer = new Skimming();
-skimmer.setContext(context);
-const results = await skimmer.skim(query, { previewLength: 200 });
+const results = await skimmer.skim("my query");
 ```
 
 - Where `previewLength` is the number of characters after the found occurrence
@@ -54,16 +50,15 @@ const results = await skimmer.skim(query, { previewLength: 200 });
 ### Using cache
 
 ```js
-const files = ["README.md"];
-const context = {
+const skimmer = Skimming.create({
   url: "https://raw.githubusercontent.com/petruki/skimming/master/",
-  files,
-};
-const query = "Usage";
+  files: ["README.md"],
+}, { 
+  expireDuration: 10, 
+  size: 10 
+});
 
-const skimmer = new Skimming({ expireDuration: 10, size: 10 });
-skimmer.setContext(context);
-const results = await skimmer.skim(query, { previewLength: 200 });
+const results = await skimmer.skim("my query");
 ```
 
 - Where `expireDuration` the time in seconds that the cached value will expire
@@ -73,7 +68,7 @@ const results = await skimmer.skim(query, { previewLength: 200 });
 
 ### Testing
 
-Use `deno test -A --unstable` to run tests.
+Use `deno task test` to run tests.
 
 ## Contributing
 

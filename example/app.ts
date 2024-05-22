@@ -1,4 +1,4 @@
-import { Context, Output, Skimming } from '../mod.ts';
+import { type Context, type Output, Skimming } from '../mod.ts';
 
 function printResult(entries: Output[]) {
   entries.forEach((output) => {
@@ -14,12 +14,11 @@ function printResult(entries: Output[]) {
 async function main() {
   const files = ['README.md'];
   const context: Context = {
-    url: `file:///${Deno.cwd()}/../test/fixtures/`,
+    url: `file:///${Deno.cwd()}/test/fixtures/`,
     files,
   };
 
-  const skimmer = new Skimming({ expireDuration: 2, size: 10 });
-  skimmer.setContext(context);
+  const skimmer = Skimming.create(context, { expireDuration: 2, size: 10 });
 
   console.log('##############################################');
   let output = await skimmer.skim('Skimming({', {

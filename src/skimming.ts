@@ -9,12 +9,15 @@ export const DEFAULT_IGNORE_CASE = false;
 export const DEFAULT_REGEX = false;
 export const DEFAULT_NEXT = false;
 
+/**
+ * Skimming class
+ */
 export class Skimming {
   useCache: boolean;
   private cacheHandler!: CacheHandler;
   private context!: Context;
 
-  constructor(cacheOptions?: CacheOptions) {
+  private constructor(cacheOptions?: CacheOptions) {
     this.useCache = false;
     if (cacheOptions) {
       this.cacheHandler = new CacheHandler(cacheOptions);
@@ -23,15 +26,25 @@ export class Skimming {
   }
 
   /**
-   * Define the URL and files that will be analysed
+   * Initialize the Skimming object
    */
-  setContext(context: Context): void {
+  static create(context?: Context, cacheOptions?: CacheOptions): Skimming {
+    const skimming = new Skimming(cacheOptions);
+
+    if (context) {
+      skimming.setContext(context);
+    }
+
+    return skimming;
+  }
+
+  private setContext(context: Context): void {
     validateContext(context);
     this.context = context;
   }
 
   /**
-   * Start skimming into the content provided by setContext()
+   * Skim the content of the provided context
    */
   async skim(
     query: string,
@@ -90,7 +103,7 @@ export class Skimming {
   }
 
   /**
-   * Skimming a given content using the provided params
+   * Skim a given content using the provided params
    */
   skimContent(
     content: string,
