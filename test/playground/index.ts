@@ -17,7 +17,7 @@ async function _testSimple() {
     files: ['README.md'],
   });
 
-  let output = await skimmer.skim('Skimming is');
+  const output = await skimmer.skim('Skimming is');
   printResult(output);
 }
 
@@ -27,7 +27,7 @@ async function _testTrimPreview() {
     files: ['README.md'],
   });
 
-  let output = await skimmer.skim('Skimming is', { previewLength: 100, });
+  const output = await skimmer.skim('Skimming is', { previewLength: 100, });
   printResult(output);
 }
 
@@ -37,7 +37,7 @@ async function _testRegex() {
     files: ['README.md'],
   });
 
-  let output = await skimmer.skim('[###]', { regex: true, previewLength: -1 });
+  const output = await skimmer.skim('[###]', { regex: true, previewLength: -1 });
   printResult(output);
 }
 
