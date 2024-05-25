@@ -186,7 +186,7 @@ test({
     const context: Context = {
       url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
       files,
-      options: { size: 10, expireDuration: 10 },
+      cacheOptions: { size: 10, expireDuration: 10 },
     };
 
     const skimmer = Skimming.create(context);
@@ -207,6 +207,35 @@ test({
 });
 
 test({
+  name: 'MOD - Should NOT return value from the cache - when skip cache is enabled',
+  async fn(): Promise<void> {
+    // given
+    const query = 'Skimming';
+    const files = ['README.md'];
+    const context: Context = {
+      url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
+      files,
+      cacheOptions: { size: 10, expireDuration: 10 },
+    };
+
+    const skimmer = Skimming.create(context);
+
+    // test
+    let output = await skimmer.skim(query);
+    assertEquals(output.length, 1);
+    output.forEach((data) => {
+      assertEquals(data.cache, false);
+    });
+
+    output = await skimmer.skim(query, { skipCache: true });
+    assertEquals(output.length, 1);
+    output.forEach((data) => {
+      assertEquals(data.cache, false);
+    });
+  },
+});
+
+test({
   name: 'MOD - Should return value from the cache with new preview length',
   async fn(): Promise<void> {
     // given
@@ -215,7 +244,7 @@ test({
     const context: Context = {
       url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
       files,
-      options: { size: 10, expireDuration: 10 },
+      cacheOptions: { size: 10, expireDuration: 10 },
     };
 
     const skimmer = Skimming.create(context);
@@ -249,7 +278,7 @@ test({
     const context: Context = {
       url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
       files,
-      options: { size: 10, expireDuration: 10 },
+      cacheOptions: { size: 10, expireDuration: 10 },
     };
 
     const skimmer = Skimming.create(context);
@@ -283,7 +312,7 @@ test({
     const context: Context = {
       url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
       files,
-      options: { size: 10, expireDuration: 10 },
+      cacheOptions: { size: 10, expireDuration: 10 },
     };
 
     const skimmer = Skimming.create(context);
@@ -323,7 +352,7 @@ test({
     const context: Context = {
       url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
       files,
-      options: { size: 10, expireDuration: 10 },
+      cacheOptions: { size: 10, expireDuration: 10 },
     };
 
     const skimmer = Skimming.create(context);

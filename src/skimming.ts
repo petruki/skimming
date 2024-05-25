@@ -38,8 +38,8 @@ export class Skimming {
       validateContext(context);
       this.context = context;
 
-      if (context.options) {
-        this.cacheHandler = new CacheHandler(context.options);
+      if (context.cacheOptions) {
+        this.cacheHandler = new CacheHandler(context.cacheOptions);
         this.useCache = true;
       }
     }
@@ -55,10 +55,10 @@ export class Skimming {
     validateQuery(query);
     validateContext(this.context);
 
-    const { ignoreCase, previewLength, trimContent } = options;
+    const { ignoreCase, previewLength, trimContent, skipCache } = options;
     let results: Output[] = [];
 
-    if (this.useCache) {
+    if (this.canUseCache(skipCache)) {
       results = this.cacheHandler.fetch(query, options);
     }
 
@@ -86,7 +86,7 @@ export class Skimming {
           };
           results.push(output);
 
-          if (this.useCache) {
+          if (this.canUseCache(skipCache)) {
             this.cacheHandler.store(
               query,
               output,
@@ -172,5 +172,9 @@ export class Skimming {
 
     result.body?.cancel();
     throw new NotContentFound(url, doc);
+  }
+
+  private canUseCache(skipCache: boolean = false): boolean {
+    return this.useCache && !skipCache;
   }
 }
