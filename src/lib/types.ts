@@ -5,7 +5,7 @@
 export type Context = {
   url: string;
   files: string[];
-  options?: CacheOptions;
+  cacheOptions?: CacheOptions;
 };
 
 /**
@@ -57,4 +57,5 @@ export type FetchOptions = {
   trimContent?: boolean;
   previewLength?: number;
   regex?: boolean;
+  skipCache?: boolean;
 };

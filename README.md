@@ -53,9 +53,7 @@ const results = await skimmer.skim("my query");
 const skimmer = Skimming.create({
   url: "https://raw.githubusercontent.com/petruki/skimming/master/",
   files: ["README.md"],
-}, { 
-  expireDuration: 10, 
-  size: 10 
+  cacheOptions: { expireDuration: 10, size: 10 },
 });
 
 const results = await skimmer.skim("my query");
