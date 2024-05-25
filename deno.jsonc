@@ -15,7 +15,8 @@
   "exports": "./mod.ts",
   "fmt": {
     "exclude": [
-      "README.md"
+      "README.md",
+      "test/fixtures/**/*"
     ]
   },
   "lock": false,

@@ -152,7 +152,8 @@ test({
     // test
     assertThrows(
       () => Skimming.create(context),
-      InvalidContext, 'Invalid context. Cause: url must not be empty.',
+      InvalidContext,
+      'Invalid context. Cause: url must not be empty.',
     );
   },
 });
@@ -170,7 +171,8 @@ test({
     // test
     assertThrows(
       () => Skimming.create(context),
-      InvalidContext, 'Invalid context. Cause: files must not be empty.',
+      InvalidContext,
+      'Invalid context. Cause: files must not be empty.',
     );
   },
 });
