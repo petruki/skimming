@@ -5,6 +5,7 @@
 export type Context = {
   url: string;
   files: string[];
+  options?: CacheOptions;
 };
 
 /**

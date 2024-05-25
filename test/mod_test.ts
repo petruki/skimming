@@ -152,8 +152,7 @@ test({
     // test
     assertThrows(
       () => Skimming.create(context),
-      InvalidContext,
-      `Invalid context. Cause: ${'context is not defined properly - use setContext() to define the context'}.`,
+      InvalidContext, 'Invalid context. Cause: url must not be empty.',
     );
   },
 });
@@ -171,8 +170,7 @@ test({
     // test
     assertThrows(
       () => Skimming.create(context),
-      InvalidContext,
-      `Invalid context. Cause: ${'file name is empty'}.`,
+      InvalidContext, 'Invalid context. Cause: files must not be empty.',
     );
   },
 });
@@ -186,9 +184,10 @@ test({
     const context: Context = {
       url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
       files,
+      options: { size: 10, expireDuration: 10 },
     };
 
-    const skimmer = Skimming.create(context, { expireDuration: 10, size: 10 });
+    const skimmer = Skimming.create(context);
 
     // test
     let output = await skimmer.skim(query);
@@ -214,9 +213,10 @@ test({
     const context: Context = {
       url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
       files,
+      options: { size: 10, expireDuration: 10 },
     };
 
-    const skimmer = Skimming.create(context, { expireDuration: 10, size: 10 });
+    const skimmer = Skimming.create(context);
 
     // test
     let output = await skimmer.skim(query, {
@@ -247,9 +247,10 @@ test({
     const context: Context = {
       url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
       files,
+      options: { size: 10, expireDuration: 10 },
     };
 
-    const skimmer = Skimming.create(context, { expireDuration: 10, size: 10 });
+    const skimmer = Skimming.create(context);
 
     // test
     let output = await skimmer.skim(query1, {
@@ -280,9 +281,10 @@ test({
     const context: Context = {
       url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
       files,
+      options: { size: 10, expireDuration: 10 },
     };
 
-    const skimmer = Skimming.create(context, { expireDuration: 10, size: 10 });
+    const skimmer = Skimming.create(context);
 
     // test
     let output = await skimmer.skim(query, {
@@ -319,9 +321,10 @@ test({
     const context: Context = {
       url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
       files,
+      options: { size: 10, expireDuration: 10 },
     };
 
-    const skimmer = Skimming.create(context, { expireDuration: 10, size: 10 });
+    const skimmer = Skimming.create(context);
 
     // test
     const output = await skimmer.skim(query, {

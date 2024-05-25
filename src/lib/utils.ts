@@ -18,14 +18,12 @@ export function validateQuery(query: string, limit?: number): void {
 
 export function validateContext(context: Context): void {
   if (!context?.url.length) {
-    throw new InvalidContext(
-      'context is not defined properly - use setContext() to define the context',
-    );
+    throw new InvalidContext('url must not be empty');
   }
 
   context.files.forEach((file) => {
     if (!file.length) {
-      throw new InvalidContext('file name is empty');
+      throw new InvalidContext('files must not be empty');
     }
   });
 }

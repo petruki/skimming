@@ -1,4 +1,4 @@
-import type { CacheOptions, Context, FetchOptions, Output } from './lib/types.ts';
+import type { Context, FetchOptions, Output } from './lib/types.ts';
 import { extractSegment, findFirstPos, validateContext, validateQuery } from './lib/utils.ts';
 import { InvalidQuery, NonMappedInstruction, NotContentFound } from './lib/exceptions.ts';
 import CacheHandler from './lib/cache.ts';
@@ -13,34 +13,36 @@ export const DEFAULT_NEXT = false;
  * Skimming class
  */
 export class Skimming {
-  useCache: boolean;
+  private useCache: boolean;
   private cacheHandler!: CacheHandler;
   private context!: Context;
 
-  private constructor(cacheOptions?: CacheOptions) {
+  private constructor() {
     this.useCache = false;
-    if (cacheOptions) {
-      this.cacheHandler = new CacheHandler(cacheOptions);
-      this.useCache = true;
-    }
   }
 
   /**
    * Initialize the Skimming object
    */
-  static create(context?: Context, cacheOptions?: CacheOptions): Skimming {
-    const skimming = new Skimming(cacheOptions);
-
-    if (context) {
-      skimming.setContext(context);
-    }
-
+  static create(context?: Context): Skimming {
+    const skimming = new Skimming();
+    skimming.setContext(context);
     return skimming;
   }
 
-  private setContext(context: Context): void {
-    validateContext(context);
-    this.context = context;
+  /**
+   * Set the context for the Skimming object
+   */
+  setContext(context?: Context): void {
+    if (context) {
+      validateContext(context);
+      this.context = context;
+
+      if (context.options) {
+        this.cacheHandler = new CacheHandler(context.options);
+        this.useCache = true;
+      }
+    }
   }
 
   /**
