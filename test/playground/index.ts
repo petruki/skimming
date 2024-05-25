@@ -27,7 +27,7 @@ async function _testTrimPreview() {
     files: ['README.md'],
   });
 
-  const output = await skimmer.skim('Skimming is', { previewLength: 100, });
+  const output = await skimmer.skim('Skimming is', { previewLength: 100 });
   printResult(output);
 }
 
@@ -41,4 +41,16 @@ async function _testRegex() {
   printResult(output);
 }
 
-_testSimple();
+function _testSearchContent() {
+  const content = `
+    # Skimming
+    It is a tool to skim through content and find what you are looking for.
+  `;
+
+  const skimmer = Skimming.create();
+
+  const output = skimmer.skimContent(content, 'skim', { previewLength: 0 });
+  console.log(output);
+}
+
+_testSearchContent();
