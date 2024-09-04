@@ -1,6 +1,6 @@
 {
   "name": "@trackerforce/skimming",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Tag, Customize and Search with Skimming for Deno",
   "tasks": {
     "fmt": "deno fmt mod.ts src/ --options-single-quote --options-line-width=120 --check",
@@ -9,7 +9,7 @@
     "lcov": "deno coverage coverage --lcov --output=coverage/report.lcov",
     "cover": "deno task clean && deno task test && deno task lcov && genhtml -o coverage/html coverage/report.lcov",
     "clean": "rm -rf ./npm ./coverage",
-    "cache-reload": "deno cache --reload --lock=deno.lock --lock-write mod.ts test/deps.ts",
+    "cache-reload": "deno cache --reload --lock=deno.lock mod.ts test/deps.ts",
     "play": "deno run -A test/playground/index.ts"
   },
   "exports": "./mod.ts",
