@@ -13,7 +13,7 @@ function printResult(entries: Output[]) {
 
 async function _testSimple() {
   const skimmer = Skimming.create({
-    url: `file:///${Deno.cwd()}/test/fixtures/`,
+    url: `file:///${Deno.cwd()}/tests/fixtures/`,
     files: ['README.md'],
   });
 
@@ -23,7 +23,7 @@ async function _testSimple() {
 
 async function _testTrimPreview() {
   const skimmer = Skimming.create({
-    url: `file:///${Deno.cwd()}/test/fixtures/`,
+    url: `file:///${Deno.cwd()}/tests/fixtures/`,
     files: ['README.md'],
   });
 
@@ -33,7 +33,7 @@ async function _testTrimPreview() {
 
 async function _testRegex() {
   const skimmer = Skimming.create({
-    url: `file:///${Deno.cwd()}/test/fixtures/`,
+    url: `file:///${Deno.cwd()}/tests/fixtures/`,
     files: ['README.md'],
   });
 

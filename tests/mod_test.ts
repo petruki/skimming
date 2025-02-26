@@ -21,7 +21,7 @@ test({
     const query = 'Skimming';
     const files = ['README.md'];
     const context: Context = {
-      url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
+      url: 'https://raw.githubusercontent.com/petruki/skimming/master/tests/fixtures/',
       files,
     };
 
@@ -40,7 +40,7 @@ test({
     const query = 'query';
     const files = ['NOT_EXIST.md'];
     const context: Context = {
-      url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
+      url: 'https://raw.githubusercontent.com/petruki/skimming/master/tests/fixtures/',
       files,
     };
 
@@ -51,7 +51,7 @@ test({
       assertEquals(error.name, 'NotContentFound');
       assertEquals(
         error.message,
-        `No content found at https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/${files[0]}.`,
+        `No content found at https://raw.githubusercontent.com/petruki/skimming/master/tests/fixtures/${files[0]}.`,
       );
     });
   },
@@ -64,7 +64,7 @@ test({
     const query = '';
     const files = ['README.md'];
     const context: Context = {
-      url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
+      url: 'https://raw.githubusercontent.com/petruki/skimming/master/tests/fixtures/',
       files,
     };
 
@@ -164,7 +164,7 @@ test({
     // given
     const files = [''];
     const context: Context = {
-      url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
+      url: 'https://raw.githubusercontent.com/petruki/skimming/master/tests/fixtures/',
       files,
     };
 
@@ -184,7 +184,7 @@ test({
     const query = 'Skimming';
     const files = ['README.md'];
     const context: Context = {
-      url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
+      url: 'https://raw.githubusercontent.com/petruki/skimming/master/tests/fixtures/',
       files,
       cacheOptions: { size: 10, expireDuration: 10 },
     };
@@ -213,7 +213,7 @@ test({
     const query = 'Skimming';
     const files = ['README.md'];
     const context: Context = {
-      url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
+      url: 'https://raw.githubusercontent.com/petruki/skimming/master/tests/fixtures/',
       files,
       cacheOptions: { size: 10, expireDuration: 10 },
     };
@@ -242,7 +242,7 @@ test({
     const query = 'Skimming';
     const files = ['README.md'];
     const context: Context = {
-      url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
+      url: 'https://raw.githubusercontent.com/petruki/skimming/master/tests/fixtures/',
       files,
       cacheOptions: { size: 10, expireDuration: 10 },
     };
@@ -276,7 +276,7 @@ test({
     const query2 = 'skimming';
     const files = ['README.md'];
     const context: Context = {
-      url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
+      url: 'https://raw.githubusercontent.com/petruki/skimming/master/tests/fixtures/',
       files,
       cacheOptions: { size: 10, expireDuration: 10 },
     };
@@ -310,7 +310,7 @@ test({
     const query = 'Skimming';
     const files = ['README.md'];
     const context: Context = {
-      url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
+      url: 'https://raw.githubusercontent.com/petruki/skimming/master/tests/fixtures/',
       files,
       cacheOptions: { size: 10, expireDuration: 10 },
     };
@@ -350,7 +350,7 @@ test({
     const query = '#{3}';
     const files = ['README.md'];
     const context: Context = {
-      url: 'https://raw.githubusercontent.com/petruki/skimming/master/test/fixtures/',
+      url: 'https://raw.githubusercontent.com/petruki/skimming/master/tests/fixtures/',
       files,
       cacheOptions: { size: 10, expireDuration: 10 },
     };
