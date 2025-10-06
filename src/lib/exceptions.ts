@@ -26,7 +26,7 @@ export class NonMappedInstruction extends Error {
 
   constructor(query: string, options: FetchOptions) {
     super(
-      `Request exit to prevent crashing - query: ${query} - options: ${String(options)}`,
+      `Request exit to prevent crashing - query: ${query} - options: ${JSON.stringify(options)}`,
     );
     this.name = this.constructor.name;
   }

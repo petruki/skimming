@@ -1,6 +1,6 @@
 import type { Context } from './types.ts';
 import { InvalidContext, InvalidQuery } from './exceptions.ts';
-import { DEFAULT_NEXT, DEFAULT_PREVIEW_LENGTH, DEFAULT_REGEX, DEFAULT_TRIM } from '../skimming.ts';
+import { DEFAULT_NEXT, DEFAULT_PREVIEW_LENGTH, DEFAULT_REGEX, DEFAULT_TRIM } from '../lib/constants.ts';
 
 export const LINE_BREAK = '\n';
 export const LAST_LINE = '$';
@@ -21,11 +21,11 @@ export function validateContext(context: Context): void {
     throw new InvalidContext('url must not be empty');
   }
 
-  context.files.forEach((file) => {
+  for (const file of context.files) {
     if (!file.length) {
       throw new InvalidContext('files must not be empty');
     }
-  });
+  }
 }
 
 /**
@@ -89,7 +89,9 @@ export function findFirstPos(
   regex: boolean = DEFAULT_REGEX,
   next: boolean = DEFAULT_NEXT,
 ): number {
-  const foundIndex = regex ? contentToFetch.search(query) : contentToFetch.search(query.replace(REGEX_ESCAPE, '\\$&'));
+  const foundIndex = regex
+    ? contentToFetch.search(query)
+    : contentToFetch.search(query.replaceAll(REGEX_ESCAPE, String.raw`\$&`));
 
   if (trimContent && foundIndex != -1) {
     let firstPos = next ? foundIndex : 0;

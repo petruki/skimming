@@ -1,5 +1,5 @@
 import type { Cache, CacheOptions, FetchOptions, Output } from './types.ts';
-import { DEFAULT_IGNORE_CASE, DEFAULT_PREVIEW_LENGTH, DEFAULT_TRIM } from '../skimming.ts';
+import { DEFAULT_IGNORE_CASE, DEFAULT_PREVIEW_LENGTH, DEFAULT_TRIM } from '../lib/constants.ts';
 
 const DEFAULT_CACHE_SIZE = 60;
 const DEFAULT_CACHE_DURATION = 60; // 1 min
@@ -39,10 +39,10 @@ export default class CacheHandler {
         output.cache = true;
         output.segment = output.segment.filter((segment) => {
           if (ignoreCase) {
-            return segment.toLowerCase().indexOf(query.toLowerCase()) >= 0;
+            return segment.toLowerCase().includes(query.toLowerCase());
           }
 
-          return segment.indexOf(query) >= 0;
+          return segment.includes(query);
         });
 
         return output.segment.length;

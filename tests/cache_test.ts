@@ -1,6 +1,6 @@
 import { assertEquals } from './deps.ts';
 import CacheHandler from '../src/lib/cache.ts';
-import { DEFAULT_IGNORE_CASE, DEFAULT_PREVIEW_LENGTH } from '../src/skimming.ts';
+import { DEFAULT_IGNORE_CASE, DEFAULT_PREVIEW_LENGTH } from '../src/lib/constants.ts';
 
 const { test } = Deno;
 

@@ -3,23 +3,13 @@ import { extractSegment, findFirstPos, validateContext, validateQuery } from './
 import { InvalidQuery, NonMappedInstruction, NotContentFound } from './lib/exceptions.ts';
 import CacheHandler from './lib/cache.ts';
 
-export const DEFAULT_PREVIEW_LENGTH = 200;
-export const DEFAULT_TRIM = true;
-export const DEFAULT_IGNORE_CASE = false;
-export const DEFAULT_REGEX = false;
-export const DEFAULT_NEXT = false;
-
 /**
  * Skimming class
  */
 export class Skimming {
-  private useCache: boolean;
+  private useCache: boolean = false;
   private cacheHandler!: CacheHandler;
   private context!: Context;
-
-  private constructor() {
-    this.useCache = false;
-  }
 
   /**
    * Initialize the Skimming object
